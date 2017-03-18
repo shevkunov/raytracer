@@ -1,0 +1,5 @@
+refactored: canvas.*, color.*, utils.*
+
+todo : continue to refactor render.h
+
+bugs : get_color address to (-1, -1)
