@@ -35,7 +35,8 @@ HEADERS  += mainwindow.h \
     include/queue.h \
     include/render.h \
     engine.h \
-    include/utils.h
+    include/utils.h \
+    include/objects.h
 
 FORMS    += mainwindow.ui
 

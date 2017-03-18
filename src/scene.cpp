@@ -99,36 +99,6 @@ release_object3d(Object3d * obj) {
     free(obj);
 }
 
-LightSource3d *
-new_light_source(const Point3d location,
-                 const Color color) {
-    
-    LightSource3d * ls_p = reinterpret_cast<LightSource3d*>(malloc(sizeof(LightSource3d)));
-    
-    ls_p->location_world = location;
-    ls_p->location = location;
-    ls_p->color = color;
-    
-	return ls_p;
-}
-
-Material
-material(const Float Ka,
-         const Float Kd,
-         const Float Ks,
-         const Float Kr,
-         const Float Kt,
-         const Float p) {
-    
-    Float sum = Ka + Kd + Ks + Kr + Kt;
-    Material m = {.Ka = Ka / sum,
-        .Kd = Kd / sum,
-        .Ks = Ks / sum,
-        .Kr = Kr / sum,
-        .Kt = Kt / sum,
-        .p = p};
-    return m;
-}
 
 Camera *
 new_camera(const Point3d camera_position,

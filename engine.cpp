@@ -24,9 +24,9 @@ QImage engine() {
 
     // Allocating new sphere
     Float radius = 100;
-    Point3d center = Point3d(0, 0, 0);
-    Color sphere_color = Color(250, 30, 30);
-    Material sphere_material = material(1, 5, 5, 10, 0, 10);
+    Point3d center(0, 0, 0);
+    Color sphere_color(250, 30, 30);
+    Material sphere_material(1, 5, 5, 10, 0, 10);
     Object3d * sphere = new_sphere(center,
                                    radius,
                                    sphere_color,
@@ -38,9 +38,9 @@ QImage engine() {
 {
     // Allocating new sphere
     Float radius = 10;
-    Point3d center = Point3d(100, 100, 100);
-    Color sphere_color = Color(30, 30, 230);
-    Material sphere_material = material(1, 5, 5, 10, 0, 10);
+    Point3d center(100, 100, 100);
+    Color sphere_color(30, 30, 230);
+    Material sphere_material(1, 5, 5, 10, 0, 10);
     Object3d * sphere = new_sphere(center,
                                    radius,
                                    sphere_color,
@@ -55,7 +55,7 @@ QImage engine() {
                                        Point3d( 700, -700, -130), // vertex 2
                                        Point3d(   0,  400, -130), // vertex 3
                                        Color(100, 255, 30),       // color
-                                       material(1, 6, 0, 2, 0, 0) // surface params
+                                       Material(1, 6, 0, 2, 0, 0) // surface params
                                        );
 
     // Adding triangle to the scene
@@ -76,7 +76,7 @@ QImage engine() {
                                   // color
                                   Color(200, 200, 50),
                                   // surface params
-                                  material(2, 3, 0, 0, 0, 0)
+                                  Material(2, 3, 0, 0, 0, 0)
                                   );
 
     load_obj("./models/cow.obj",
@@ -90,10 +90,9 @@ QImage engine() {
     printf("\nNumber of polygons: %i\n", scene->last_object_index + 1);
 
     // Allocating new light source
-    Color light_source_color = Color(255, 255, 255);
-    Point3d light_source_location = Point3d(-300, 300, 300);
-    LightSource3d * light_source = new_light_source(light_source_location,
-                                                    light_source_color);
+
+    LightSource3d * light_source
+            = new LightSource3d(Point3d(-300, 300, 300), Color(255, 255, 255));
     // Adding light source to the scene
     add_light_source(scene,
                      light_source);

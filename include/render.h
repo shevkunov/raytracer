@@ -7,41 +7,11 @@
 #include <include/color.h>
 #include <include/canvas.h>
 #include <include/utils.h>
+#include <include/objects.h>
 
 #ifdef RAY_INTERSECTIONS_STAT
 long intersections_per_ray;
 #endif // RAY_INTERSECTIONS_STAT
-
-typedef
-struct {
-    // Absolute location
-    Point3d location_world;
-    // Location on projection
-	Point3d location;
-	Color color;
-}
-LightSource3d;
-
-typedef
-struct {
-    // Required:
-    // Ka + Kd + Ks + Kr + Kt = 1.0
-    
-    // Ambient
-    Float Ka;
-    // Diffuse
-    Float Kd;
-    // Specular
-    Float Ks;
-    // Reflection
-    Float Kr;
-    // Transparency
-    Float Kt;
-    
-    // Ks * light_source_color * ((cos(..))^p)
-    Float p;
-}
-Material;
 
 typedef 
 struct {
@@ -241,17 +211,6 @@ new_sphere(const Point3d center,
 void
 release_object3d(Object3d * obj);
 
-LightSource3d *
-new_light_source(const Point3d location,
-             const Color color);
-
-Material
-material(const Float Ka,
-         const Float Kd,
-         const Float Ks,
-         const Float Kr,
-         const Float Kt,
-         const Float p);
 
 /***************************************************
  *                     Camera                      *
