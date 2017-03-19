@@ -37,7 +37,8 @@ HEADERS  += mainwindow.h \
     engine.h \
     include/utils.h \
     include/objects.h \
-    include/sphere.h
+    include/sphere.h \
+    include/triangle.h
 
 FORMS    += mainwindow.ui
 

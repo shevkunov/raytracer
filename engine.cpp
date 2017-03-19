@@ -6,6 +6,7 @@
 #include <include/render.h>
 #include <include/obj_loader.h>
 #include <include/sphere.h>
+#include <include/triangle.h>
 
 #define CANVAS_W 300
 #define CANVAS_H 300
@@ -49,7 +50,7 @@ QImage engine() {
                sphere);
 }
     // Allocating new triangle
-    Object3d * triangle = new_triangle(Point3d(-700, -700, -130), // vertex 1
+    Object3d * triangle = new Triangle3d(Point3d(-700, -700, -130), // vertex 1
                                        Point3d( 700, -700, -130), // vertex 2
                                        Point3d(   0,  400, -130), // vertex 3
                                        Color(100, 255, 30),       // color

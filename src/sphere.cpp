@@ -3,7 +3,6 @@
 Sphere::Sphere(const Point3d &center, const Float &radius, const Color &color,
                const Material &material)
     : center(center), radius(radius),color(color), material(material) {
-    this->data = this;
 }
 
 bool Sphere::intersect(const Point3d &vector_start, const Vector3d &vector,
@@ -69,10 +68,4 @@ Point3d Sphere::get_min_boundary_point() const {
 Point3d Sphere::get_max_boundary_point() const {
     return Point3d(center.x + radius + 1., center.y + radius + 1.,
                    center.z + radius + 1.);
-}
-
-void
-release_sphere_data(void * data) {
-    Sphere * sphere = reinterpret_cast<Sphere*>(data);
-	free(sphere);
 }

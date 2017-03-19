@@ -6,6 +6,7 @@
 #include <include/color.h>
 #include <include/utils.h>
 #include <include/obj_loader.h>
+#include <include/triangle.h>
 
 #define MAX_VERTEX_COUNT 150000
 
@@ -247,7 +248,7 @@ scene_face_handler(Queue * vertexes,
                     .rotate_y(sin_al_y, cos_al_y)
                     .rotate_z(sin_al_z, cos_al_z);
             
-            add_object(scene, new_triangle_with_norms(
+            add_object(scene, new Triangle3d(
                                                       Point3d(p1.x * scale + dx, p1.y * scale + dy, p1.z * scale + dz),
                                                       Point3d(p2.x * scale + dx, p2.y * scale + dy, p2.z * scale + dz),
                                                       Point3d(p3.x * scale + dx, p3.y * scale + dy, p3.z * scale + dz),
@@ -257,7 +258,7 @@ scene_face_handler(Queue * vertexes,
                                                       default_color,
                                                       default_material));
         } else {
-            add_object(scene, new_triangle(
+            add_object(scene, new Triangle3d(
                                            Point3d(p1.x * scale + dx, p1.y * scale + dy, p1.z * scale + dz),
                                            Point3d(p2.x * scale + dx, p2.y * scale + dy, p2.z * scale + dz),
                                            Point3d(p3.x * scale + dx, p3.y * scale + dy, p3.z * scale + dz),
