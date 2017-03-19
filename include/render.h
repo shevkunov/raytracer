@@ -13,32 +13,6 @@
 long intersections_per_ray;
 #endif // RAY_INTERSECTIONS_STAT
 
-typedef 
-struct {
-	void * data;
-    
-    bool (*intersect)(const void * data,
-                         const Point3d vector_start,
-                         const Vector3d vector,
-                         Point3d * const intersection_point);
-    
-	Color (*get_color)(const void * data,
-                       const Point3d intersection_point);
-    
-    Vector3d (*get_normal_vector)(const void * data,
-                                  const Point3d intersection_point);
-    
-    Material (*get_material)(const void * data,
-                             const Point3d intersection_point);
-    
-    Point3d (*get_min_boundary_point)(const void * data);
-    
-    Point3d (*get_max_boundary_point)(const void * data);
-    
-	void (*release_data)(void * data);
-}
-Object3d;
-
 // KD Tree
 enum Plane {XY, XZ, YZ, NONE};
 
@@ -201,12 +175,6 @@ new_triangle_with_texture(const Point3d p1,
                           Canvas * texture,
                           const Color color,
                           const Material material);
-
-Object3d *
-new_sphere(const Point3d center,
-           const Float radius,
-           const Color color,
-           const Material material);
 
 void
 release_object3d(Object3d * obj);

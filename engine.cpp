@@ -5,6 +5,7 @@
 #include <include/canvas.h>
 #include <include/render.h>
 #include <include/obj_loader.h>
+#include <include/sphere.h>
 
 #define CANVAS_W 300
 #define CANVAS_H 300
@@ -27,7 +28,7 @@ QImage engine() {
     Point3d center(0, 0, 0);
     Color sphere_color(250, 30, 30);
     Material sphere_material(1, 5, 5, 10, 0, 10);
-    Object3d * sphere = new_sphere(center,
+    Object3d * sphere = new Sphere(center,
                                    radius,
                                    sphere_color,
                                    sphere_material);
@@ -41,10 +42,7 @@ QImage engine() {
     Point3d center(100, 100, 100);
     Color sphere_color(30, 30, 230);
     Material sphere_material(1, 5, 5, 10, 0, 10);
-    Object3d * sphere = new_sphere(center,
-                                   radius,
-                                   sphere_color,
-                                   sphere_material);
+    Object3d * sphere = new Sphere(center, radius, sphere_color, sphere_material);
 
     // Adding sphere to the scene
     add_object(scene,

@@ -95,7 +95,6 @@ rebuild_kd_tree(Scene * scene) {
 
 void
 release_object3d(Object3d * obj) {
-    obj->release_data(obj->data);
     free(obj);
 }
 

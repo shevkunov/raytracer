@@ -144,7 +144,7 @@ new_triangle_with_texture(const Point3d p1,
     triangle->texture = texture;
     
 	Object3d * obj = wrap_triangle(triangle);    
-    obj->get_color = get_texture_color;
+    obj->get_color_ = get_texture_color;
     
     return obj;
 }
@@ -165,7 +165,7 @@ new_triangle_with_norms(const Point3d p1,
     triangle->n3 = n3;
     
     Object3d * obj = wrap_triangle(triangle);
-    obj->get_normal_vector = get_phong_normal_vector;
+    obj->get_normal_vector_ = get_phong_normal_vector;
     
     return obj;
 }
@@ -198,15 +198,15 @@ create_plain_triangle(const Point3d p1,
 
 inline static Object3d *
 wrap_triangle(Triangle3d * triangle) {
-    Object3d * obj = reinterpret_cast<Object3d*>(calloc(1, sizeof(Object3d)));
+    Object3d * obj = new Object3d();
 	obj->data = triangle;
-	obj->release_data = release_triangle_data;
-	obj->get_color = get_triangle_color;
-	obj->intersect = intersect_triangle;
-    obj->get_normal_vector = get_triangle_normal_vector;
-    obj->get_material = get_triangle_material;
-    obj->get_min_boundary_point = get_min_triangle_boundary_point;
-    obj->get_max_boundary_point = get_max_triangle_boundary_point;    
+    obj->release_data_ = release_triangle_data;
+    obj->get_color_ = get_triangle_color;
+    obj->intersect_ = intersect_triangle;
+    obj->get_normal_vector_ = get_triangle_normal_vector;
+    obj->get_material_ = get_triangle_material;
+    obj->get_min_boundary_point_ = get_min_triangle_boundary_point;
+    obj->get_max_boundary_point_ = get_max_triangle_boundary_point;
 	return obj;
 }
 

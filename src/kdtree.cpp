@@ -416,8 +416,8 @@ make_initial_voxel(Object3d ** objects,
         return v;
     }
         
-    Point3d min_p = objects[0]->get_min_boundary_point(objects[0]->data);
-    Point3d max_p = objects[0]->get_max_boundary_point(objects[0]->data);
+    Point3d min_p = objects[0]->get_min_boundary_point();
+    Point3d max_p = objects[0]->get_max_boundary_point();
     
     Float x_min = min_p.x;
     Float y_min = min_p.y;
@@ -429,8 +429,9 @@ make_initial_voxel(Object3d ** objects,
     
     int i;
     for(i = 0; i < objects_count; i++) {
-        min_p = objects[i]->get_min_boundary_point(objects[i]->data);
-        max_p = objects[i]->get_max_boundary_point(objects[i]->data);
+        Object3d * obj = objects[i];
+        min_p = obj->get_min_boundary_point();
+        max_p = obj->get_max_boundary_point();
         
         x_min = (x_min < min_p.x) ? x_min : min_p.x;
         y_min = (y_min < min_p.y) ? y_min : min_p.y;
@@ -450,8 +451,8 @@ inline __hot bool
 object_in_voxel(Object3d * const obj,
                 const Voxel v) {
     
-    Point3d min_p = obj->get_min_boundary_point(obj->data);
-    Point3d max_p = obj->get_max_boundary_point(obj->data);
+    Point3d min_p = obj->get_min_boundary_point();
+    Point3d max_p = obj->get_max_boundary_point();
 
     return
         !((max_p.x < v.x_min)
@@ -659,7 +660,7 @@ find_intersection_node(KDNode * const node,
                     ++intersections_per_ray;
                     #endif // RAY_INTERSECTIONS_STAT
                     
-                    if((obj->intersect(obj->data, vector_start, vector, &intersection_point))
+                    if((obj->intersect(vector_start, vector, &intersection_point))
                        && (point_in_voxel(intersection_point, v))) {
 
                         sqr_curr_dist = Vector3d(vector_start, intersection_point).module2();

@@ -117,11 +117,11 @@ calculate_color(const Scene * const scene,
     const Float dist = *dist_ptr;
     
     
-    const Material material = obj->get_material(obj->data, point);
+    const Material material = obj->get_material(point);
     
-    const Vector3d norm = obj->get_normal_vector(obj->data, point);
+    const Vector3d norm = obj->get_normal_vector(point);
     
-    Color obj_color = obj->get_color(obj->data, point);
+    Color obj_color = obj->get_color(point);
     Color ambient_color;
     Color diffuse_color;
     Color reflected_color;

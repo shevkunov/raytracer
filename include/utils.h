@@ -19,6 +19,8 @@ public:
     Float y;
 };
 
+class Vector3d;
+
 class Point3d {
 public:
     Point3d() : Point3d(0., 0., 0.) {
@@ -31,6 +33,8 @@ public:
     Point3d rotate_x(const Float sin_al, const Float cos_al) const;
     Point3d rotate_y(const Float sin_al, const Float cos_al) const;
     Point3d rotate_z(const Float sin_al, const Float cos_al) const;
+
+    Vector3d to_vector() const;
 
     Float x;
     Float y;

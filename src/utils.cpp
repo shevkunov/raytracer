@@ -89,3 +89,7 @@ Point3d Point3d::rotate_z(const Float sin_al, const Float cos_al) const {
                    x * sin_al + y * cos_al,
                    z);
 }
+
+Vector3d Point3d::to_vector() const {
+    return Vector3d(x, y, z);
+}
