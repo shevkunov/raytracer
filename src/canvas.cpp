@@ -11,6 +11,10 @@
 #include <math.h>
 
 
+Canvas::Canvas(const char * const file_name) {
+    read_png(file_name);
+}
+
 Canvas::Canvas(size_t width, size_t height)
     : img_(QImage(width, height, QImage::Format_RGB32)) {
 }
@@ -19,15 +23,15 @@ void Canvas::clear() {
     img_.fill(QColor(0, 0, 0));
 }
 
-void Canvas::write_png(char file_name[]) {
+void Canvas::write_png(const char * const file_name) const {
     img_.save(file_name);
 }
 
-void Canvas::read_png(char *file_name) {
+void Canvas::read_png(const char * const file_name) {
     img_.load(file_name);
 }
 
-Canvas Canvas::grayscale() {
+Canvas Canvas::grayscale() const {
     const int w = img_.width();
     const int h = img_.height();
     Canvas ret(w, h);
@@ -55,7 +59,7 @@ int mattrix_y[3][3] =
      { 0,  0,  0},
      { 1,  2,  1}};
 
-Canvas Canvas::detect_edges() {
+Canvas Canvas::detect_edges() const {
     Canvas grayscaled_canv = grayscale();
     const int w = img_.width();
     const int h = img_.height();
@@ -87,7 +91,7 @@ Canvas Canvas::detect_edges() {
     return grad_canv;
 }
 
-Color Canvas::get_pixel(int x, int y) {
+Color Canvas::get_pixel(int x, int y) const {
     if ((x < 0) || (x > img_.width()) ||
             (y < 0) || (y > img_.height())) {
         return Color(0, 0, 0);

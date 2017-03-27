@@ -32,6 +32,12 @@ Float Vector3d::cos(const Vector3d &v1, const Vector3d &v2) {
     return Vector3d::dot(v1, v2) / sqrt(v1.module2() * v2.module2());
 }
 
+bool Vector3d::check_same_clock_dir(const Vector3d &v1, const Vector3d &v2,
+                                    const Vector3d &norm) {
+    const Vector3d norm_v1_v2 = Vector3d::cross(v2, v1);
+    return !(Vector3d::dot(norm_v1_v2, norm) < 0);
+}
+
 Float Vector3d::module2() const {
     return x * x + y * y + z * z;
 }
@@ -70,26 +76,4 @@ Vector3d Vector3d::rotate_z(const Float &sin_al, const Float &cos_al) const {
     return Vector3d(x * cos_al - y * sin_al,
                     x * sin_al + y * cos_al,
                     z);
-}
-
-Point3d Point3d::rotate_x(const Float sin_al, const Float cos_al) const {
-    return Point3d(x,
-                   y * cos_al - z * sin_al,
-                   y * sin_al + z * cos_al);
-}
-
-Point3d Point3d::rotate_y(const Float sin_al, const Float cos_al) const {
-    return Point3d(x * cos_al - z * sin_al,
-                   y,
-                   x * sin_al + z * cos_al);
-}
-
-Point3d Point3d::rotate_z(const Float sin_al, const Float cos_al) const {
-    return Point3d(x * cos_al - y * sin_al,
-                   x * sin_al + y * cos_al,
-                   z);
-}
-
-Vector3d Point3d::to_vector() const {
-    return Vector3d(x, y, z);
 }

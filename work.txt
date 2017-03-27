@@ -2,10 +2,13 @@ refactored: canvas.*, color.*, utils.*
 
 todo : continue to refactor render.h
     Object3d:: add virtuality
-    utils:: сделать Vector3d наследником Point3d и переписать операции типа Shpere::intersect
+    utils:: переписать операции типа Shpere::intersect
     Shpere:: переписать intersect
 
-    Triangle3d::переписать всё, сделать три класса
+    Triangle3d::переписать код с учётом новых классов.
+    Canvas:: С-строки
+
+    переделать во всех release free -> delete
 bugs : get_color address to (-1, -1)
 
 

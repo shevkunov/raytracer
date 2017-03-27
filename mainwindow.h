@@ -20,6 +20,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QImage rendered;
+    double render_time;
 };
 
 #endif // MAINWINDOW_H

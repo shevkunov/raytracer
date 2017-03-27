@@ -8,9 +8,6 @@
 #include <include/sphere.h>
 #include <include/triangle.h>
 
-#define CANVAS_W 300
-#define CANVAS_H 300
-
 // Boost by rendering in parallel
 #define THREADS_NUM 4
 
@@ -18,7 +15,7 @@ const Color BACKGROUND_COLOR = Color(255, 255, 255);
 const int MAX_OBJECTS_NUMBER = 10000;
 const int MAX_LIGHT_SOURCES_NUMBER = 5;
 
-QImage engine() {
+QImage engine(size_t width, size_t height) {
     // Allocating scene
     Scene * scene = new_scene(MAX_OBJECTS_NUMBER,
                               MAX_LIGHT_SOURCES_NUMBER,
@@ -48,6 +45,19 @@ QImage engine() {
     // Adding sphere to the scene
     add_object(scene,
                sphere);
+}
+{
+    Canvas * tex = new Canvas("./models/wall.png");
+
+    add_object(scene, new TexturedTriangle3d(Point3d(-300, -300, -120),
+                                             Point3d(300, -300, -120),
+                                             Point3d(300, 300, -120),
+                                             Point2d(5, 0),
+                                             Point2d(0, 0),
+                                             Point2d(0, 5),
+                                             tex,
+                                             Color(55, 255, 55),
+                                             Material(1, 6, 0, 2, 0, 0)));
 }
     // Allocating new triangle
     Object3d * triangle = new Triangle3d(Point3d(-700, -700, -130), // vertex 1
@@ -120,11 +130,14 @@ QImage engine() {
     // move_camera(camera, vector3df(d_x, d_y, d_z));
 
     // Alocate new canvas, to render scene on it
-    Canvas canvas(CANVAS_W, CANVAS_H);
+    Canvas canvas(width, height);
 
     render_scene(scene,
                  camera,
                  canvas);
+
+    canvas.write_png("rendered.png");
+
     // Saving rendered image in PNG format
     //canvas.write_png("example.png");
 

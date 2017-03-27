@@ -4,6 +4,8 @@
 #include <QPainter>
 #include <QPicture>
 
-QImage engine();
+#include <ctime>
+
+QImage engine(size_t width, size_t height);
 
 #endif // ENGINE_H

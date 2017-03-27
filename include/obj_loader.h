@@ -33,16 +33,16 @@ SceneFaceHandlerParams;
 
 void
 load_obj(const char * filename,
-         void (* face_handler)(Queue * vertexes,
-                               Queue * norm_vectors,
+         void (* face_handler)(Queue<Point3d> &vertexes,
+                               Queue<Vector3d> &norm_vectors,
                                void * args),
          void * args);
 
 //----------------------------------------------------
 
 void
-scene_face_handler(Queue * vertexes,
-                   Queue * norm_vectors,
+scene_face_handler(Queue<Point3d> &vertexes,
+                   Queue<Vector3d> &norm_vectors,
                    void * arg);
 
 static inline SceneFaceHandlerParams

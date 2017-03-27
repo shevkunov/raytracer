@@ -22,8 +22,8 @@ void
 parse_face(char * str,
            Point3d v[],
            Vector3d vn[],
-           void (* face_handler)(Queue * vertexes,
-                                 Queue * norm_vectors,
+           void (* face_handler)(Queue<Point3d> &vertexes,
+                                 Queue<Vector3d> &norm_vectors,
                                  void * args),
            void * args);
 
@@ -40,8 +40,8 @@ static Vector3d norm_vectors[MAX_VERTEX_COUNT];
 
 void
 load_obj(const char * filename,
-         void (* face_handler)(Queue * vertexes,
-                               Queue * norm_vectors,
+         void (* face_handler)(Queue<Point3d> &vertexes,
+                               Queue<Vector3d> &norm_vectors,
                                void * args),
          void * args) {
     
@@ -89,42 +89,37 @@ void
 parse_face(char * str,
            Point3d v[],
            Vector3d vn[],
-           void (* face_handler)(Queue * vertexes,
-                                 Queue * norm_vectors,
-                                 void * args),
+           void (*face_handler)(Queue<Point3d>&, Queue<Vector3d>&, void *),
            void * args) {
     
-    Queue * tokens = new_queue();
-    
+    Queue<char*> tokens;
+    Queue<Point3d> vertexes;
+    Queue<Vector3d> norm_vectors;
+
     char * token = NULL;
     token = strtok(str, " \n");
-    while(token) {
-        add(token, tokens);
+
+    while (token) {
+        tokens.push(token);
         token = strtok(NULL, " \n");
     }
-    
-    Queue * vertexes = new_queue();
-    Queue * norm_vectors = new_queue();
     
     int vertex_index = 0;
     int texture_index = 0;
     int norm_index = 0;
-    while(!is_empty(tokens)) {
-        token = (char *) get(tokens);
+    while(!tokens.empty()) {
+        token = tokens.pop();
         
         parse_face_str(token, &vertex_index, &texture_index, &norm_index);
 
-        add(&v[vertex_index - 1], vertexes);
+        vertexes.push(v[vertex_index - 1]);
         
-        if(norm_index > 0)
-            add(&vn[norm_index - 1], norm_vectors);
+        if(norm_index > 0) {
+            norm_vectors.push(vn[norm_index - 1]);
+        }
     }
     
     face_handler(vertexes, norm_vectors, args);
-    
-    release_queue(tokens);
-    release_queue(vertexes);
-    release_queue(norm_vectors);
 }
 
 void
@@ -179,8 +174,8 @@ parse_face_str(char * str,
 }
 
 void
-scene_face_handler(Queue * vertexes,
-                   Queue * norm_vectors,
+scene_face_handler(Queue<Point3d> &vertexes,
+                   Queue<Vector3d> &norm_vectors,
                    void * arg) {
     SceneFaceHandlerParams * params = (SceneFaceHandlerParams *) arg;
     
@@ -202,14 +197,21 @@ scene_face_handler(Queue * vertexes,
     Color default_color = params->default_color;
     Material default_material = params->default_material;
     
-    Point3d * p_p1 = (Point3d *) get(vertexes);
-    Point3d * p_p2 = (Point3d *) get(vertexes);
-    Point3d * p_p3 = NULL;
+    Point3d p_p1 = vertexes.pop();
+    Point3d p_p2 = vertexes.pop();
+    Point3d p_p3;
     
-    Vector3d * p_v1 = (Vector3d *) get(norm_vectors);
-    Vector3d * p_v2 = (Vector3d *) get(norm_vectors);
-    Vector3d * p_v3 = NULL;
+    Vector3d p_v1;
+    Vector3d p_v2;
+    Vector3d p_v3;
     
+    bool vLoaded = false;
+    if (norm_vectors.size() >= 2) {
+        p_v1 = norm_vectors.pop();
+        p_v2 = norm_vectors.pop();
+        vLoaded = true;
+    }
+
     Point3d p1;
     Point3d p2;
     Point3d p3;
@@ -218,37 +220,40 @@ scene_face_handler(Queue * vertexes,
     Vector3d v2;
     Vector3d v3;
     
-    while(!is_empty(vertexes)) {
-        p_p3 = (Point3d *) get(vertexes);
-        p_v3 = (Vector3d *) get(norm_vectors);
-        
-        p1 = (*p_p1).rotate_x(sin_al_x, cos_al_x)
+    while(!vertexes.empty()) {
+        p_p3 = vertexes.pop();
+        if (!norm_vectors.empty()) {
+            p_v3 = norm_vectors.pop();
+        } else {
+            vLoaded = false;
+        }
+        p1 = p_p1.rotate_x(sin_al_x, cos_al_x)
                 .rotate_y(sin_al_y, cos_al_y)
                 .rotate_z(sin_al_z, cos_al_z);
         
-        p2 = (*p_p2).rotate_x(sin_al_x, cos_al_x)
+        p2 = p_p2.rotate_x(sin_al_x, cos_al_x)
                 .rotate_x(sin_al_y, cos_al_y)
                 .rotate_z(sin_al_z, cos_al_z);
         
-        p3 = (*p_p3).rotate_x(sin_al_x, cos_al_x)
+        p3 = p_p3.rotate_x(sin_al_x, cos_al_x)
                 .rotate_y(sin_al_y, cos_al_y)
                 .rotate_z(sin_al_z, cos_al_z);
         
-        if(p_v1 && p_v2 && p_v3) {
+        if(vLoaded) {
             
-            v1 = (*p_v1).rotate_x(sin_al_x, cos_al_x)
+            v1 = p_v1.rotate_x(sin_al_x, cos_al_x)
                     .rotate_y(sin_al_y, cos_al_y)
                     .rotate_z(sin_al_z, cos_al_z);
             
-            v2 = (*p_v2).rotate_x(sin_al_x, cos_al_x)
+            v2 = p_v2.rotate_x(sin_al_x, cos_al_x)
                     .rotate_y(sin_al_y, cos_al_y)
                     .rotate_z(sin_al_z, cos_al_z);
             
-            v3 = (*p_v3).rotate_x(sin_al_x, cos_al_x)
+            v3 = p_v3.rotate_x(sin_al_x, cos_al_x)
                     .rotate_y(sin_al_y, cos_al_y)
                     .rotate_z(sin_al_z, cos_al_z);
             
-            add_object(scene, new Triangle3d(
+            add_object(scene, new NormedTriangle3d(
                                                       Point3d(p1.x * scale + dx, p1.y * scale + dy, p1.z * scale + dz),
                                                       Point3d(p2.x * scale + dx, p2.y * scale + dy, p2.z * scale + dz),
                                                       Point3d(p3.x * scale + dx, p3.y * scale + dy, p3.z * scale + dz),

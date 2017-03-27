@@ -13,15 +13,16 @@ bool Sphere::intersect(const Point3d &vector_start, const Vector3d &vector,
                          + vector.y * (vector_start.y - center.y)
                          + vector.z * (vector_start.z - center.z));
 
-    const Float c = center.to_vector().module2()
-                    + vector_start.to_vector().module2()
-                    - 2 * Vector3d::dot(vector_start.to_vector(), center.to_vector())
+    const Float c = center.module2()
+                    + vector_start.module2()
+                    - 2 * Vector3d::dot(vector_start, center)
                     - radius * radius;
 
     const Float D = b * b - 4 * a * c;
 
-    if(D < 0)
+    if (D < 0.) {
         return false;
+    }
 
     const Float sqrt_D = sqrt(D);
     const Float a_2 = 2 * a;

@@ -12,39 +12,20 @@ class Triangle3d : public Object3d{
 public:
     Triangle3d(const Point3d &p1, const Point3d &p2, const Point3d &p3,
              const Color &color, const Material &material);
-    Triangle3d(const Point3d &p1, const Point3d &p2, const Point3d &p3,
-             const Vector3d &n1, const Vector3d &n2, const Vector3d &n3,
-             const Color &color, const Material &material);
-    Triangle3d(const Point3d &p1, const Point3d &p2, const Point3d &p3,
-             const Point2d &t1,const Point2d &t2, const Point2d &t3,
-             Canvas *texture, const Color &color, const Material &material);
 
     virtual bool intersect(const Point3d &vector_start, const Vector3d &vector,
                    Point3d * const intersection_point) const;
 
     ////////
 
-    virtual Color get_color(const Point3d &intersection_point) const {
-        return get_color_(this, intersection_point);
-    }
-    virtual Vector3d get_normal_vector(const Point3d &intersection_point) const {
-        return get_normal_vector_(this, intersection_point);
-    }
-
-    //virtual Color get_color(const Point3d &intersection_point) const;
-    //virtual Vector3d get_normal_vector(const Point3d &intersection_point) const;
+    virtual Color get_color(const Point3d &intersection_point) const;
+    virtual Vector3d get_normal_vector(const Point3d &intersection_point) const;
     virtual Material get_material(const Point3d &intersection_point) const;
     virtual Point3d get_min_boundary_point() const;
     virtual Point3d get_max_boundary_point() const;
 
-    Color (*get_color_)(const void * data, // TODO
-                       const Point3d intersection_point);
-
-    Vector3d (*get_normal_vector_)(const void * data, // TODO
-                                  const Point3d intersection_point);
-
-    void (*release_data_)(void * data);
-
+    virtual void get_weights_of_vertexes(const Point3d &intersection_point,
+                                         Float &w1, Float &w2, Float &w3) const;
     // vertexes
     Point3d p1;
     Point3d p2;
@@ -63,12 +44,14 @@ public:
     Color color;
     Material material;
 
-    // texture
-    Point2d t1;
-    Point2d t2;
-    Point2d t3;
+};
 
-    Canvas * texture;
+class NormedTriangle3d : public Triangle3d {
+public:
+    NormedTriangle3d(const Point3d &p1, const Point3d &p2, const Point3d &p3,
+             const Vector3d &n1, const Vector3d &n2, const Vector3d &n3,
+             const Color &color, const Material &material);
+    virtual Vector3d get_normal_vector(const Point3d &intersection_point) const;
 
     // normals
     Vector3d n1;
@@ -76,51 +59,19 @@ public:
     Vector3d n3;
 };
 
-inline static bool
-intersect_triangle(const void * data,
-                   const Point3d vector_start,
-                   const Vector3d vector,
-                   Point3d * const intersection_point);
+class TexturedTriangle3d : public Triangle3d {
+public:
+    TexturedTriangle3d(const Point3d &p1, const Point3d &p2, const Point3d &p3,
+             const Point2d &t1,const Point2d &t2, const Point2d &t3,
+             Canvas *texture, const Color &color, const Material &material);
+    virtual Color get_color(const Point3d &intersection_point) const;
 
-Point3d
-get_min_triangle_boundary_point(const void * data);
+    // texture
+    Point2d t1;
+    Point2d t2;
+    Point2d t3;
 
-Point3d
-get_max_triangle_boundary_point(const void * data);
-
-static inline Color
-get_triangle_color(const void * data,
-                   const Point3d intersection_point);
-
-static inline Color
-get_texture_color(const void * data,
-                  const Point3d intersection_point);
-
-static inline Vector3d
-get_triangle_normal_vector(const void * data,
-                           const Point3d intersection_point);
-
-static inline Vector3d
-get_phong_normal_vector(const void * data,
-                        const Point3d intersection_point);
-
-static inline Material
-get_triangle_material(const void * data,
-                      const Point3d intersection_point);
-
-static inline void
-release_triangle_data(void * data);
-
-static inline bool
-check_same_clock_dir(const Vector3d v1,
-                     const Vector3d v2,
-                     const Vector3d norm);
-
-static inline void
-get_weights_of_vertexes(const Triangle3d * const tr,
-                        const Point3d intersection_point,
-                        Float * const w1,
-                        Float * const w2,
-                        Float * const w3);
+    Canvas * texture;
+};
 
 #endif // TRIANGLE_H

@@ -19,27 +19,7 @@ public:
     Float y;
 };
 
-class Vector3d;
-
-class Point3d {
-public:
-    Point3d() : Point3d(0., 0., 0.) {
-    }
-
-    Point3d(const Float &x, const Float &y, const Float &z) :
-        x(x), y(y), z(z) {
-    }
-
-    Point3d rotate_x(const Float sin_al, const Float cos_al) const;
-    Point3d rotate_y(const Float sin_al, const Float cos_al) const;
-    Point3d rotate_z(const Float sin_al, const Float cos_al) const;
-
-    Vector3d to_vector() const;
-
-    Float x;
-    Float y;
-    Float z;
-};
+class Point3d;
 
 class Vector3d {
 public:
@@ -60,7 +40,11 @@ public:
     static Float dot(const Vector3d &v1, const Vector3d &v2);
     static Float cos(const Vector3d &v1, const Vector3d &v2);
 
+    static bool check_same_clock_dir(const Vector3d &v1, const Vector3d &v2,
+                                     const Vector3d &norm);
+
     Vector3d reflect(const Vector3d &norm) const;
+
 
     Vector3d rotate_x(const Float &sin_al, const Float &cos_al) const;
     Vector3d rotate_y(const Float &sin_al, const Float &cos_al) const;
@@ -75,5 +59,22 @@ public:
     Float y;
     Float z;
 };
+
+class Point3d : public Vector3d {
+public:
+    Point3d() : Vector3d(0., 0., 0.) {
+    }
+
+    Point3d(const Vector3d &v) : Vector3d(v) {
+    }
+
+    Point3d(Vector3d &&v) : Vector3d(v) {
+    }
+
+    Point3d(const Float &x, const Float &y, const Float &z) :
+        Vector3d(x, y, z) {
+    }
+};
+
 
 #endif //__UTILS_H__

@@ -9,34 +9,6 @@ Triangle3d::Triangle3d(const Point3d &p1, const Point3d &p2, const Point3d &p3,
           v_p3_p1(Vector3d(p3, p1)) {
 
     d = (-(p1.x * norm.x + p1.y * norm.y + p1.z * norm.z));
-
-    this->get_normal_vector_ = get_triangle_normal_vector;
-    this->release_data_ = release_triangle_data;
-    this->get_color_ = get_triangle_color;
-}
-
-Triangle3d::Triangle3d(const Point3d &p1, const Point3d &p2, const Point3d &p3,
-                       const Point2d &t1, const Point2d &t2, const Point2d &t3,
-                       Canvas *texture, const Color &color, const Material &material)
-        : Triangle3d(p1, p2, p3, color, material) {
-    this->t1 = t1;
-    this->t2 = t2;
-    this->t3 = t3;
-    this->texture = texture;
-
-    this->get_color_ = get_texture_color;
-    
-}
-
-Triangle3d::Triangle3d(const Point3d &p1, const Point3d &p2, const Point3d &p3,
-                       const Vector3d &n1, const Vector3d &n2, const Vector3d &n3,
-                       const Color &color, const Material &material)
-        : Triangle3d(p1, p2, p3, color, material) {
-    this->n1 = n1;
-    this->n2 = n2;
-    this->n3 = n3;
-    
-    this->get_normal_vector_ = get_phong_normal_vector;
 }
 
 bool Triangle3d::intersect(const Point3d &vector_start, const Vector3d &vector,
@@ -67,9 +39,9 @@ bool Triangle3d::intersect(const Point3d &vector_start, const Vector3d &vector,
     const Float z = vector_start.z + vector.z * k;
     const Point3d ipt = Point3d(x, y, z);
 
-    if(check_same_clock_dir(v_p1_p2, Vector3d(p1, ipt), norm)
-       && check_same_clock_dir(v_p2_p3, Vector3d(p2, ipt), norm)
-       && check_same_clock_dir(v_p3_p1, Vector3d(p3, ipt), norm)) {
+    if(Vector3d::check_same_clock_dir(v_p1_p2, Vector3d(p1, ipt), norm)
+       && Vector3d::check_same_clock_dir(v_p2_p3, Vector3d(p2, ipt), norm)
+       && Vector3d::check_same_clock_dir(v_p3_p1, Vector3d(p3, ipt), norm)) {
 
         *intersection_point = ipt;
         return true;
@@ -79,13 +51,14 @@ bool Triangle3d::intersect(const Point3d &vector_start, const Vector3d &vector,
     return false;
 }
 
-// Color Triangle3d::get_color(const Point3d &intersection_point) const;
+Color Triangle3d::get_color(const Point3d &intersection_point) const {
+    (void)intersection_point;
+    return color;
+}
 
-static inline Vector3d
-get_triangle_normal_vector(const void * data,
-                           const Point3d intersection_point) {
-    const Triangle3d * triangle =  reinterpret_cast<const Triangle3d*>(data);
-    return triangle->norm;
+Vector3d Triangle3d::get_normal_vector(const Point3d &intersection_point) const {
+    (void)intersection_point;
+    return norm;
 }
 
 Material Triangle3d::get_material(const Point3d &intersection_point) const {
@@ -125,106 +98,72 @@ Point3d Triangle3d::get_max_boundary_point() const {
     return Point3d(x_max + EPSILON, y_max + EPSILON, z_max + EPSILON);
 }
 
-static inline Color
-get_triangle_color(const void * data,
-                   const Point3d intersection_point) {
-    const Triangle3d * triangle = reinterpret_cast<const Triangle3d*>(data);
-	return triangle->color;
+void Triangle3d::get_weights_of_vertexes(const Point3d &intersection_point,
+                                         Float &w1, Float &w2, Float &w3) const {
+    const Vector3d v_p1_p = Vector3d(p1, intersection_point);
+    const Vector3d v_p2_p = Vector3d(p2, intersection_point);
+    const Vector3d v_p3_p = Vector3d(p3, intersection_point);
+
+    const Float s1 = Vector3d::cross(v_p2_p, v_p2_p3).module();
+    const Float s2 = Vector3d::cross(v_p3_p, v_p3_p1).module();
+    const Float s3 = Vector3d::cross(v_p1_p, v_p1_p2).module();
+
+    const Float s_sum = s1 + s2 + s3;
+
+    w1 = s1 / s_sum;
+    w2 = s2 / s_sum;
+    w3 = s3 / s_sum;
 }
 
-static inline Color
-get_texture_color(const void * data,
-                  const Point3d intersection_point) {
-    
-    const Triangle3d * tr = reinterpret_cast<const Triangle3d*>(data);
-    
+TexturedTriangle3d::TexturedTriangle3d(const Point3d &p1, const Point3d &p2,
+                                       const Point3d &p3, const Point2d &t1,
+                                       const Point2d &t2, const Point2d &t3,
+                                       Canvas *texture, const Color &color,
+                                       const Material &material)
+        : Triangle3d(p1, p2, p3, color, material), t1(t1), t2(t2),
+          t3(t3), texture(texture) {
+}
+
+NormedTriangle3d::NormedTriangle3d(const Point3d &p1, const Point3d &p2, const Point3d &p3,
+                       const Vector3d &n1, const Vector3d &n2, const Vector3d &n3,
+                       const Color &color, const Material &material)
+        : Triangle3d(p1, p2, p3, color, material), n1(n1), n2(n2), n3(n3) {
+}
+
+
+Color TexturedTriangle3d::get_color(const Point3d &intersection_point) const {
+    // TODO UNCHECKED
     Float w1;
     Float w2;
     Float w3;
-    
-    get_weights_of_vertexes(tr, intersection_point, &w1, &w2, &w3);
-    
-    const Point2d t1 = tr->t1;
-    const Point2d t2 = tr->t2;
-    const Point2d t3 = tr->t3;
-    
+
+    get_weights_of_vertexes(intersection_point, w1, w2, w3);
+        
     Float xf = w1 * t1.x + w2 * t2.x + w3 * t3.x;
     Float yf = w1 * t1.y + w2 * t2.y + w3 * t3.y;
     
     // transform xf and yf to values from interval [0..1]
     xf = (xf < 0) ? (xf - (int)xf) + 1 : (xf - (int)xf);
     yf = (yf < 0) ? (yf - (int)yf) + 1 : (yf - (int)yf);
+
+    int x = (int)(xf * texture->width());
+    int y = (int)(yf * texture->height());
     
-    Canvas * canvas = tr->texture;
-    
-    int x = (int)(xf * canvas->width());
-    int y = (int)(yf * canvas->height());
-    
-    return canvas->get_pixel(x, y);
+    return texture->get_pixel(x, y);
 }
 
-static inline Vector3d
-get_phong_normal_vector(const void * data,
-                        const Point3d intersection_point) {
-    
-    const Triangle3d * tr = reinterpret_cast<const Triangle3d*>(data);
-    
+
+Vector3d NormedTriangle3d::get_normal_vector(const Point3d &intersection_point) const {
     Float w1;
     Float w2;
     Float w3;
     
-    get_weights_of_vertexes(tr, intersection_point, &w1, &w2, &w3);
-    
-    const Vector3d n1 = tr->n1;
-    const Vector3d n2 = tr->n2;
-    const Vector3d n3 = tr->n3;
-        
+    get_weights_of_vertexes(intersection_point, w1, w2, w3);
+
     return Vector3d(w1 * n1.x + w2 * n2.x + w3 * n3.x,
                      w1 * n1.y + w2 * n2.y + w3 * n3.y,
                      w1 * n1.z + w2 * n2.z + w3 * n3.z);
 }
 
 
-static inline void
-release_triangle_data(void * data) {
-    Triangle3d * triangle = reinterpret_cast<Triangle3d*>(data);
-	free(triangle);
-}
-
-
-
-static inline bool
-check_same_clock_dir(const Vector3d v1,
-                     const Vector3d v2,
-                     const Vector3d norm) {
-    
-    const Vector3d norm_v1_v2 = Vector3d::cross(v2, v1);
-    
-    if(Vector3d::dot(norm_v1_v2, norm) < 0)
-        return false;
-    else
-        return true;
-}
-
-static inline void
-get_weights_of_vertexes(const Triangle3d * const tr,
-                        const Point3d intersection_point,
-                        Float * const w1,
-                        Float * const w2,
-                        Float * const w3) {
-    
-    const Vector3d v_p1_p = Vector3d(tr->p1, intersection_point);
-    const Vector3d v_p2_p = Vector3d(tr->p2, intersection_point);
-    const Vector3d v_p3_p = Vector3d(tr->p3, intersection_point);
-    
-    const Float s1 = Vector3d::cross(v_p2_p, tr->v_p2_p3).module();
-    const Float s2 = Vector3d::cross(v_p3_p, tr->v_p3_p1).module();
-    const Float s3 = Vector3d::cross(v_p1_p, tr->v_p1_p2).module();
-    
-    const Float s_sum = s1 + s2 + s3;
-    
-    *w1 = s1 / s_sum;
-    *w2 = s2 / s_sum;
-    *w3 = s3 / s_sum;
-}
 
