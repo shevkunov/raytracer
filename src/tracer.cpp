@@ -20,8 +20,8 @@ Color Scene::trace_recursively(const Point3d &vector_start,
     Float nearest_intersection_point_dist = FLOAT_MAX;
     
     if (kd_tree->find_intersection_tree(vector_start, vector,
-                               &nearest_obj, &nearest_intersection_point,
-                               &nearest_intersection_point_dist)) {
+                               nearest_obj, nearest_intersection_point,
+                               nearest_intersection_point_dist)) {
 
         return calculate_color(vector_start, vector, &nearest_obj,
                                &nearest_intersection_point, &nearest_intersection_point_dist,
@@ -126,27 +126,16 @@ Color Scene::calculate_color(const Point3d &vector_start,
 
 Color Scene::get_lighting_color(const Point3d &point, const Vector3d &norm_v) const {
     Color light_color = Color(0, 0, 0);
-    
-    // possibly - redundant code (was added to prevent overflow of Float)
-    // TODO: remove
-    //normalize_vector(&norm_v);
-    
+
     LightSource3d * ls;
     Vector3d v_ls;
     Float cos_ls;
     Color color_ls;
-    for (int i = 0; i < light_sources.size(); i++) {
-        if(light_sources[i]) {
+    for (size_t i = 0; i < light_sources.size(); i++) {
+        if (light_sources[i]) {
             ls = light_sources[i];
-        
-            // If not shaded
-            if(is_viewable(ls->location, point)) {
+            if (is_viewable(ls->location, point)) {
                 v_ls = Vector3d(point, ls->location);
-                
-                // possibly - redundant code (was added to prevent overflow of Float)
-                // TODO: remove
-                //normalize_vector(&v_ls);
-            
                 cos_ls = fabs(Vector3d::cos(norm_v, v_ls));
                 color_ls = Color::multiply(ls->color, cos_ls);
                 light_color = Color::add(light_color, color_ls);
@@ -160,11 +149,6 @@ Color Scene::get_lighting_color(const Point3d &point, const Vector3d &norm_v) co
 Color Scene::get_specular_color(const Point3d &point, const Vector3d &reflected_ray,
                                 const Float &p) const {
     Color light_color(0, 0, 0);
-    
-    // possibly - redundant code (was added to prevent overflow of Float)
-    // TODO: remove
-    //normalize_vector(&reflected_ray);
-    
     LightSource3d * ls;
     Vector3d v_ls;
     Float cos_ls;
@@ -172,15 +156,8 @@ Color Scene::get_specular_color(const Point3d &point, const Vector3d &reflected_
     for (size_t i = 0; i < light_sources.size(); i++) {
         if (light_sources[i]) {
             ls = light_sources[i];
-        
-            // If not shaded
             if(is_viewable(ls->location, point)) {
                 v_ls = Vector3d(point, ls->location);
-                
-                // possibly - redundant code (was added to prevent overflow of Float)
-                // TODO: remove
-                //normalize_vector(&v_ls);
-            
                 cos_ls = Vector3d::cos(reflected_ray, v_ls);
                 if(cos_ls > EPSILON) {
                     color_ls = Color::multiply(ls->color, pow(cos_ls, p));
@@ -197,19 +174,15 @@ bool Scene::is_viewable(const Point3d &target_point, const Point3d &starting_poi
     const Vector3d ray = Vector3d(starting_point, target_point);
     const Float target_dist = ray.module();
     
-    // possibly - redundant code (was added to prevent overflow of Float)
-    // TODO: remove
-    //normalize_vector(&ray);
-    
     Object3d * nearest_obj = NULL;
     Point3d nearest_intersection_point;
     Float nearest_intersection_point_dist = FLOAT_MAX;
     
     if (kd_tree->find_intersection_tree(starting_point,
                                         ray,
-                                        &nearest_obj,
-                                        &nearest_intersection_point,
-                                        &nearest_intersection_point_dist)) {
+                                        nearest_obj,
+                                        nearest_intersection_point,
+                                        nearest_intersection_point_dist)) {
 
         // Check if intersection point is closer than target_point
         return (target_dist < nearest_intersection_point_dist);

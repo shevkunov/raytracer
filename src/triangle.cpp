@@ -12,10 +12,10 @@ Triangle3d::Triangle3d(const Point3d &p1, const Point3d &p2, const Point3d &p3,
 }
 
 bool Triangle3d::intersect(const Point3d &vector_start, const Vector3d &vector,
-               Point3d * const intersection_point) const {
+               Point3d &intersection_point) const {
     const Float scalar_product = Vector3d::dot(norm, vector);
 
-    if(fabs(scalar_product) < EPSILON) {
+    if (fabs(scalar_product) < EPSILON) {
         // Ray is perpendicular to triangles normal vector (A, B, C)
         // it means that ray is parellel to triangle
         // so there is no intersection
@@ -28,7 +28,7 @@ bool Triangle3d::intersect(const Point3d &vector_start, const Vector3d &vector,
                  + d)
             / scalar_product;
 
-    if(k < EPSILON) {
+    if (k < EPSILON) {
         // Avoid intersection in the opposite direction
         return false;
     }
@@ -39,11 +39,11 @@ bool Triangle3d::intersect(const Point3d &vector_start, const Vector3d &vector,
     const Float z = vector_start.z + vector.z * k;
     const Point3d ipt = Point3d(x, y, z);
 
-    if(Vector3d::check_same_clock_dir(v_p1_p2, Vector3d(p1, ipt), norm)
+    if (Vector3d::check_same_clock_dir(v_p1_p2, Vector3d(p1, ipt), norm)
        && Vector3d::check_same_clock_dir(v_p2_p3, Vector3d(p2, ipt), norm)
        && Vector3d::check_same_clock_dir(v_p3_p1, Vector3d(p3, ipt), norm)) {
 
-        *intersection_point = ipt;
+        intersection_point = ipt;
         return true;
     }
 
@@ -67,33 +67,17 @@ Material Triangle3d::get_material(const Point3d &intersection_point) const {
 }
 
 Point3d Triangle3d::get_min_boundary_point() const {
-    Float x_min = p1.x;
-    Float y_min = p1.y;
-    Float z_min = p1.z;
-
-    x_min = (x_min < p2.x) ? x_min : p2.x;
-    y_min = (y_min < p2.y) ? y_min : p2.y;
-    z_min = (z_min < p2.z) ? z_min : p2.z;
-
-    x_min = (x_min < p3.x) ? x_min : p3.x;
-    y_min = (y_min < p3.y) ? y_min : p3.y;
-    z_min = (z_min < p3.z) ? z_min : p3.z;
+    Float x_min = fast_min(p1.x, p2.x, p3.x);
+    Float y_min = fast_min(p1.y, p2.y, p3.y);
+    Float z_min = fast_min(p1.z, p2.z, p3.z);
 
     return Point3d(x_min - EPSILON, y_min - EPSILON, z_min - EPSILON);
 }
 
 Point3d Triangle3d::get_max_boundary_point() const {
-    Float x_max = p1.x;
-    Float y_max = p1.y;
-    Float z_max = p1.z;
-
-    x_max = (x_max > p2.x) ? x_max : p2.x;
-    y_max = (y_max > p2.y) ? y_max : p2.y;
-    z_max = (z_max > p2.z) ? z_max : p2.z;
-
-    x_max = (x_max > p3.x) ? x_max : p3.x;
-    y_max = (y_max > p3.y) ? y_max : p3.y;
-    z_max = (z_max > p3.z) ? z_max : p3.z;
+    Float x_max = fast_max(p1.x, p2.x, p3.x);
+    Float y_max = fast_max(p1.y, p2.y, p3.y);
+    Float z_max = fast_max(p1.z, p2.z, p3.z);
 
     return Point3d(x_max + EPSILON, y_max + EPSILON, z_max + EPSILON);
 }
@@ -133,9 +117,7 @@ NormedTriangle3d::NormedTriangle3d(const Point3d &p1, const Point3d &p2, const P
 
 Color TexturedTriangle3d::get_color(const Point3d &intersection_point) const {
     // TODO UNCHECKED
-    Float w1;
-    Float w2;
-    Float w3;
+    Float w1, w2, w3;
 
     get_weights_of_vertexes(intersection_point, w1, w2, w3);
         
@@ -154,9 +136,7 @@ Color TexturedTriangle3d::get_color(const Point3d &intersection_point) const {
 
 
 Vector3d NormedTriangle3d::get_normal_vector(const Point3d &intersection_point) const {
-    Float w1;
-    Float w2;
-    Float w3;
+    Float w1, w2, w3;
     
     get_weights_of_vertexes(intersection_point, w1, w2, w3);
 

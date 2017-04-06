@@ -10,6 +10,7 @@
 #include <include/obj_loader.h>
 #include <include/sphere.h>
 #include <include/triangle.h>
+#include <include/quadrangle.h>
 #include <include/scene.h>
 
 const Color BACKGROUND_COLOR = Color(255, 255, 255);
@@ -23,6 +24,15 @@ QImage engine(size_t width, size_t height) {
     Point3d center(0, 0, 0);
     Color sphere_color(250, 30, 30);
     Material sphere_material(1, 5, 5, 10, 0, 10);
+
+
+    Object3d* quad = new Quadrangle3d(Point3d(-500, -500, -100),
+                                      Point3d(+800, -0, -100),
+                                      Point3d(+800, -0, +300),
+                                      Point3d(-500, -500, +300),
+                                      Color(255, 0, 0),
+                                      Material(1, 5, 5, 100, 0, 10));
+    scene->add_object(quad);
 
     Object3d* sphere = new Sphere(center, radius, sphere_color, sphere_material);
     //scene->add_object(sphere);
@@ -41,7 +51,7 @@ QImage engine(size_t width, size_t height) {
 //{
     Canvas tex("./models/wall.png");
 
-    scene->add_object(new TexturedTriangle3d(Point3d(-300, -300, -120),
+    scene->add_object(new TexturedTriangle3d(Point3d(-300-5, -300, -120),
                                              Point3d(300, -300, -120),
                                              Point3d(300, 300, -120),
                                              Point2d(5, 0),

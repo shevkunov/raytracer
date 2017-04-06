@@ -6,7 +6,7 @@ Sphere::Sphere(const Point3d &center, const Float &radius, const Color &color,
 }
 
 bool Sphere::intersect(const Point3d &vector_start, const Vector3d &vector,
-               Point3d * const intersection_point) const {
+               Point3d &intersection_point) const {
     const Float a = vector.module2();
 
     const Float b = 2 * (vector.x * (vector_start.x - center.x)
@@ -35,12 +35,13 @@ bool Sphere::intersect(const Point3d &vector_start, const Vector3d &vector,
 
     const Float t = (min_t > EPSILON) ? min_t : max_t;
 
-    if(t < EPSILON)
+    if (t < EPSILON) {
         return false;
+    }
 
-    *intersection_point = Point3d(vector_start.x + t * vector.x,
-                                  vector_start.y + t * vector.y,
-                                  vector_start.z + t * vector.z);
+    intersection_point = Point3d(vector_start.x + t * vector.x,
+                                 vector_start.y + t * vector.y,
+                                 vector_start.z + t * vector.z);
 
     return true;
 }

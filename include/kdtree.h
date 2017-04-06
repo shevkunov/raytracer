@@ -7,16 +7,6 @@
 // KD Tree
 enum Plane {XY, XZ, YZ, NONE};
 
-class Coord {
-public:
-    Coord() : x(0), y(0), z(0){
-    }
-
-    Float x;
-    Float y;
-    Float z;
-};
-
 class Voxel {
 public:
     Voxel(): x_min(0.), y_min(0.), z_min(0.),x_max(0.), y_max(0.), z_max(0.) {
@@ -29,18 +19,31 @@ public:
 
     Voxel(const std::vector<Object3d*> &objects);
 
-    bool is_in_voxel(Object3d * const obj) const;
-    bool is_in_voxel(const Point3d p) const;
+    bool is_in(Object3d * const obj) const;
+    bool is_in(const Point3d p) const;
 
-    int objects_in_voxel(const std::vector<Object3d*> &objects) const;
+    int count_objects_in(const std::vector<Object3d*> &objects) const;
 
     void find_plane(const std::vector<Object3d*> &objects,
                     const int tree_depth,
                     enum Plane &p,
-                    Coord &c) const;
+                    Point3d &c) const;
 
-    void split_voxel(const enum Plane p, const Coord c,
+    void split(const enum Plane p, const Point3d c,
                      Voxel &vl, Voxel &vr) const;
+
+    inline bool x_in_voxel(const Float x) const;
+    inline bool y_in_voxel(const Float y) const;
+    inline bool z_in_voxel(const Float z) const;
+    bool intersection(const Vector3d vector,
+                            const Point3d vector_start) const;
+
+
+    static bool vector_plane_intersection(const Vector3d vector,
+                                          const Point3d vector_start,
+                                          const enum Plane plane,
+                                          const Point3d coord,
+                                          Point3d &result);
 
     std::vector<Object3d*> filter_overlapped_objects(const std::vector<Object3d*> &objects) const;
 
@@ -59,7 +62,7 @@ public:
     KDNode(): l(NULL), r(NULL) {
     }
 
-    KDNode(enum Plane plane, const Coord &coord,
+    KDNode(enum Plane plane, const Point3d &coord,
            const std::vector<Object3d*> &objects, KDNode *l, KDNode *r)
         : plane(plane), coord(coord), objects(objects), l(l), r(r) {
     }
@@ -68,7 +71,7 @@ public:
 
     ~KDNode();
     enum Plane plane;
-    Coord coord;
+    Point3d coord;
     std::vector<Object3d*> objects;
     KDNode *l;
     KDNode *r;
@@ -79,9 +82,17 @@ public:
     KDTree(std::vector<Object3d *> &objects);
     bool find_intersection_tree(const Point3d vector_start,
                                 const Vector3d vector,
-                                Object3d ** const nearest_obj_ptr,
-                                Point3d * const nearest_intersection_point_ptr,
-                                Float * const nearest_intersection_point_dist_ptr);
+                                Object3d *&nearest_obj_ptr,
+                                Point3d &nearest_intersection_point_ptr,
+                                Float &nearest_intersection_point_dist_ptr);
+
+    bool find_intersection_node(KDNode * const node,
+                                const Voxel v,
+                                const Point3d vector_start,
+                                const Vector3d vector,
+                                Object3d *&nearest_obj_ptr,
+                                Point3d &nearest_intersection_point_ptr,
+                                Float &nearest_intersection_point_dist_ptr);
 
     static KDNode* rec_build(std::vector<Object3d*> &objects, Voxel v, int iter);
     ~KDTree();

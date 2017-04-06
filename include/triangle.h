@@ -1,8 +1,8 @@
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
 
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 
 #include <include/canvas.h>
 #include <include/objects.h>
@@ -14,7 +14,7 @@ public:
              const Color &color, const Material &material);
 
     virtual bool intersect(const Point3d &vector_start, const Vector3d &vector,
-                   Point3d * const intersection_point) const;
+                   Point3d &intersection_point) const;
 
     ////////
 

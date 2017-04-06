@@ -23,13 +23,13 @@ public:
          default_color(default_color), default_material(default_material) {
     }
 
+    Scene * scene;
+
     Float scale;
     
     Float dx;
     Float dy;
     Float dz;
-    
-    Scene * scene;
     
     Float sin_al_x;
     Float cos_al_x;
@@ -54,10 +54,6 @@ public:
     void parse_norm_vector(std::ifstream &in);
     void parse_face_str(char *str, int * v_index, int * vt_index, int * vn_index);
 };
-
-
-//----------------------------------------------------
-
 
 
 #endif

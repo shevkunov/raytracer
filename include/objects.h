@@ -49,7 +49,7 @@ public:
     }
 
     virtual bool intersect(const Point3d &vector_start, const Vector3d &vector,
-                   Point3d * const intersection_point) const = 0;
+                   Point3d &intersection_point) const = 0;
     virtual Color get_color(const Point3d &intersection_point) const = 0;
     virtual Vector3d get_normal_vector(const Point3d &intersection_point) const = 0;
     virtual Material get_material(const Point3d &intersection_point) const = 0;

@@ -7,6 +7,61 @@ typedef double Float;
 const Float EPSILON = 1e-5;
 #define FLOAT_MAX DBL_MAX
 
+template <typename T>
+inline T fast_max(const T &a, const T &b, const T &c) {
+    T ret = a;
+    if (ret < b) {
+        ret = b;
+    }
+    if (ret < c) {
+        ret = c;
+    }
+    return ret;
+}
+
+template <typename T>
+inline T fast_min(const T &a, const T &b, const T &c) {
+    T ret = a;
+    if (ret > b) {
+        ret = b;
+    }
+    if (ret > c) {
+        ret = c;
+    }
+    return ret;
+}
+
+template <typename Type>
+inline Type max(Type a) {
+    static Type mx = a;
+    if (mx < a) {
+        mx = a;
+    }
+    return mx;
+}
+
+template <typename T, typename ... Type>
+inline T max(T a, Type ... args) {
+    T temp = max(args...);
+    return (temp > a ? temp : a);
+}
+
+template <typename Type>
+inline Type min(Type a) {
+    static Type mn = a;
+    if (mn > a) {
+        mn = a;
+    }
+    return mn;
+}
+
+template <typename T, typename ... Type>
+inline T min(T a, Type ... args) {
+    T temp = min(args...);
+    return (temp < a ? temp : a);
+}
+
+
 class Point2d {
 public:
     Point2d() : Point2d(0., 0.0) {
@@ -19,7 +74,7 @@ public:
     Float y;
 };
 
-class Point3d;
+//class Point3d;
 
 class Vector3d {
 public:
@@ -30,7 +85,7 @@ public:
         x(x), y(y), z(z) {
     }
 
-    Vector3d(const Point3d &start, const Point3d &end);
+    Vector3d(const Vector3d &start, const Vector3d &end);
 
     Vector3d cross(const Vector3d &other) const;
     Float dot(const Vector3d &other) const;
@@ -60,6 +115,9 @@ public:
     Float z;
 };
 
+typedef Vector3d Point3d;
+
+/*
 class Point3d : public Vector3d {
 public:
     Point3d() : Vector3d(0., 0., 0.) {
@@ -75,6 +133,6 @@ public:
         Vector3d(x, y, z) {
     }
 };
-
+*/
 
 #endif //__UTILS_H__

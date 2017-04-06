@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     src/kdtree.cpp \
     src/color.cpp \
     src/utils.cpp \
-    src/camera.cpp
+    src/camera.cpp \
+    src/quadrangle.cpp
 
 HEADERS  += mainwindow.h \
     include/canvas.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h \
     include/triangle.h \
     include/scene.h \
     include/fog.h \
-    include/camera.h
+    include/camera.h \
+    include/quadrangle.h
 
 FORMS    += mainwindow.ui
 
