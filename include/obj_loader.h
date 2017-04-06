@@ -1,13 +1,28 @@
 #ifndef _OBJ_LOADER_H_
 #define _OBJ_LOADER_H_
 
-#include <math.h>
-#include <include/render.h>
+#include <cmath>
 #include <include/color.h>
 #include <include/queue.h>
+#include <include/scene.h>
 
-typedef
-struct {
+#include <fstream>
+
+
+class SceneFaceHandler {
+public:
+    SceneFaceHandler(Scene * scene, Float scale,
+                     Float dx, Float dy, Float dz,
+                     Float al_x, Float al_y, Float al_z,
+                     Color default_color, Material default_material)
+        :scene(scene), scale(scale),
+         dx(dx), dy(dy), dz(dz),
+         sin_al_x(sin(al_x)), cos_al_x(cos(al_x)),
+         sin_al_y(sin(al_y)), cos_al_y(cos(al_y)),
+         sin_al_z(sin(al_z)), cos_al_z(cos(al_z)),
+         default_color(default_color), default_material(default_material) {
+    }
+
     Float scale;
     
     Float dx;
@@ -27,52 +42,22 @@ struct {
     
     Color default_color;
     Material default_material;
-}
-SceneFaceHandlerParams;
 
+    std::vector<Point3d> vertexes;
+    std::vector<Vector3d> norm_vectors;
 
-void
-load_obj(const char * filename,
-         void (* face_handler)(Queue<Point3d> &vertexes,
-                               Queue<Vector3d> &norm_vectors,
-                               void * args),
-         void * args);
+    void load_obj(std::string filename);
+    void scene_face_handler(Queue<Point3d> &vertexes, Queue<Vector3d> &norm_vectors);
+
+    void parse_face(std::string &str);
+    void parse_vertex(std::ifstream &in);
+    void parse_norm_vector(std::ifstream &in);
+    void parse_face_str(char *str, int * v_index, int * vt_index, int * vn_index);
+};
+
 
 //----------------------------------------------------
 
-void
-scene_face_handler(Queue<Point3d> &vertexes,
-                   Queue<Vector3d> &norm_vectors,
-                   void * arg);
 
-static inline SceneFaceHandlerParams
-new_scene_face_handler_params(Scene * scene,
-                              Float scale,
-                              Float dx,
-                              Float dy,
-                              Float dz,
-                              Float al_x,
-                              Float al_y,
-                              Float al_z,
-                              Color default_color,
-                              Material default_material) {
-    
-    SceneFaceHandlerParams params;
-    params.scene = scene;
-    params.scale = scale;
-    params.dx = dx;
-    params.dy = dy;
-    params.dz = dz;
-    params.sin_al_x = sin(al_x);
-    params.cos_al_x = cos(al_x);
-    params.sin_al_y = sin(al_y);
-    params.cos_al_y = cos(al_y);
-    params.sin_al_z = sin(al_z);
-    params.cos_al_z = cos(al_z);
-    params.default_color = default_color;
-    params.default_material = default_material;
-
-    return  params;
-}
 
 #endif

@@ -1,6 +1,10 @@
 #ifndef OBJECTS_H
 #define OBJECTS_H
 
+#include <include/utils.h>
+#include <include/objects.h>
+#include <include/color.h>
+
 class LightSource3d {
 public:
     LightSource3d() : LightSource3d(Point3d(), Color()) {
@@ -41,6 +45,9 @@ public:
 
 class Object3d {
 public:
+    virtual ~Object3d() {
+    }
+
     virtual bool intersect(const Point3d &vector_start, const Vector3d &vector,
                    Point3d * const intersection_point) const = 0;
     virtual Color get_color(const Point3d &intersection_point) const = 0;
@@ -51,5 +58,4 @@ public:
 };
 
 #endif // OBJECTS_H
-/*
-*/
+

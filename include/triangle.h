@@ -4,8 +4,8 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include <include/render.h>
 #include <include/canvas.h>
+#include <include/objects.h>
 #include <include/utils.h>
 
 class Triangle3d : public Object3d{

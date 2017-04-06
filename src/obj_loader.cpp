@@ -1,135 +1,104 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
-#include <include/render.h>
+#include <string>
+#include <fstream>
+#include <iostream>
+
+#include <include/camera.h>
 #include <include/color.h>
 #include <include/utils.h>
 #include <include/obj_loader.h>
 #include <include/triangle.h>
 
-#define MAX_VERTEX_COUNT 150000
-
-void
-parse_vertex(const char * str,
-             Point3d * v);
-
-void
-parse_norm_vector(const char * str,
-                  Vector3d * v);
-
-void
-parse_face(char * str,
-           Point3d v[],
-           Vector3d vn[],
-           void (* face_handler)(Queue<Point3d> &vertexes,
-                                 Queue<Vector3d> &norm_vectors,
-                                 void * args),
-           void * args);
-
-void
-parse_face_str(char * str,
-               int * v_index,
-               int * vt_index,
-               int * vn_index);
-
-static Point3d vertexes[MAX_VERTEX_COUNT];
-static Vector3d norm_vectors[MAX_VERTEX_COUNT];
 
 // TODO: use LinkedList instead of arrays
 
-void
-load_obj(const char * filename,
-         void (* face_handler)(Queue<Point3d> &vertexes,
-                               Queue<Vector3d> &norm_vectors,
-                               void * args),
-         void * args) {
+void SceneFaceHandler::load_obj(std::string filename) {
+    std::ifstream in(filename);
+    std::string line;
     
-    int vertexes_cnt = 0;
-    int norm_vectors_cnt = 0;
-    
-    FILE * fp = fopen(filename, "r");
-    
-    char * line = NULL;
-    size_t len = 0;
-    ssize_t read = 0;
-    
-    while ((read = getline(&line, &len, fp)) > 0) {
-        
-        if((line[0] != 'v') && (line[0] != 'f'))
+    while (in >> line) {
+        //std::cout << "readed = " << line; TODO REMOVE
+        if ((line != "v") && (line != "vn") && (line != "f")) {
             continue;
+        }
         
-        if((line[0] == 'v') && (line[1] == ' '))
-            parse_vertex(&line[2], &vertexes[vertexes_cnt++]);
+        if (line == "v") {
+            parse_vertex(in);
+        }
         
-        if((line[0] == 'v') && (line[1] == 'n'))
-            parse_norm_vector(&line[3], &norm_vectors[norm_vectors_cnt++]);
+        if (line == "vn") {
+            parse_norm_vector(in);
+        }
         
-        if((line[0] == 'f') && (line[1] == ' '))
-            parse_face(&line[2], vertexes, norm_vectors, face_handler, args);
+        if (line == "f") {
+            std::getline(in, line);
+            parse_face(line);
+        }
     }
-    
-    if (line)
-        free(line);
+
 }
 
-void
-parse_vertex(const char * str,
-             Point3d * v) {
-    sscanf(str, "%lf %lf %lf", &v->y, &v->z, &v->x);
+void SceneFaceHandler::parse_vertex(std::ifstream &in) {
+    Point3d v;
+    in >> v.y >> v.z >> v.x;
+    //std::cout << "V" << v.x << v.y << v.z; TODO REMOVE
+    vertexes.push_back(v);
 }
 
-void
-parse_norm_vector(const char * str,
-                  Vector3d * v) {
-    sscanf(str, "%lf %lf %lf", &v->y, &v->z, &v->x);
+void SceneFaceHandler::parse_norm_vector(std::ifstream &in) {
+    Vector3d v;
+    in >> v.y >> v.z >> v.x;
+    //std::cout << "VN" << v.x << v.y << v.z; TODO REMOVE
+    norm_vectors.push_back(v);
 }
 
-void
-parse_face(char * str,
-           Point3d v[],
-           Vector3d vn[],
-           void (*face_handler)(Queue<Point3d>&, Queue<Vector3d>&, void *),
-           void * args) {
-    
-    Queue<char*> tokens;
-    Queue<Point3d> vertexes;
-    Queue<Vector3d> norm_vectors;
+void SceneFaceHandler::parse_face(std::string &str) {
+    Queue<std::string> tokens;
+    Queue<Point3d> q_vertexes;
+    Queue<Vector3d> q_norm_vectors;
 
-    char * token = NULL;
-    token = strtok(str, " \n");
-
-    while (token) {
+    std::string token = "";
+    std::string sep = " \n";
+    for (size_t i = 0; i < str.size(); ++i) {
+        if (sep.find(str[i]) != sep.npos) {
+            if (token != "") {
+                tokens.push(token);
+                token = "";
+            }
+        } else {
+            token += str[i];
+        }
+    }
+    if (token != "") {
         tokens.push(token);
-        token = strtok(NULL, " \n");
     }
-    
+
     int vertex_index = 0;
     int texture_index = 0;
     int norm_index = 0;
     while(!tokens.empty()) {
         token = tokens.pop();
-        
-        parse_face_str(token, &vertex_index, &texture_index, &norm_index);
+        char cstr[token.length()];
+        strcpy(cstr, token.c_str());
+        parse_face_str(cstr, &vertex_index, &texture_index, &norm_index);
 
-        vertexes.push(v[vertex_index - 1]);
+        q_vertexes.push(vertexes[vertex_index - 1]);
         
         if(norm_index > 0) {
-            norm_vectors.push(vn[norm_index - 1]);
+            q_norm_vectors.push(norm_vectors[norm_index - 1]);
         }
     }
     
-    face_handler(vertexes, norm_vectors, args);
+    scene_face_handler(q_vertexes, q_norm_vectors);
 }
 
-void
-parse_face_str(char * str,
-               int * v_index,
-               int * vt_index,
-               int * vn_index) {
-    
+void SceneFaceHandler::parse_face_str(char * str, int * v_index,
+                                      int * vt_index, int * vn_index) {
     int str_len = strlen(str);
-    
+
     int i = 0;
     while((str[i] != '/')
           && (str[i] != ' ')
@@ -173,30 +142,8 @@ parse_face_str(char * str,
         *vn_index = atoi(str);
 }
 
-void
-scene_face_handler(Queue<Point3d> &vertexes,
-                   Queue<Vector3d> &norm_vectors,
-                   void * arg) {
-    SceneFaceHandlerParams * params = (SceneFaceHandlerParams *) arg;
-    
-    Scene * scene = params->scene;
-    Float scale = params->scale;
-    Float dx = params->dx;
-    Float dy = params->dy;
-    Float dz = params->dz;
-    
-    Float sin_al_x = params->sin_al_x;
-    Float cos_al_x = params->cos_al_x;
-
-    Float sin_al_y = params->sin_al_y;
-    Float cos_al_y = params->cos_al_y;
-    
-    Float sin_al_z = params->sin_al_z;
-    Float cos_al_z = params->cos_al_z;
-    
-    Color default_color = params->default_color;
-    Material default_material = params->default_material;
-    
+void SceneFaceHandler::scene_face_handler(Queue<Point3d> &vertexes,
+                                          Queue<Vector3d> &norm_vectors) {
     Point3d p_p1 = vertexes.pop();
     Point3d p_p2 = vertexes.pop();
     Point3d p_p3;
@@ -228,47 +175,45 @@ scene_face_handler(Queue<Point3d> &vertexes,
             vLoaded = false;
         }
         p1 = p_p1.rotate_x(sin_al_x, cos_al_x)
-                .rotate_y(sin_al_y, cos_al_y)
-                .rotate_z(sin_al_z, cos_al_z);
+                 .rotate_y(sin_al_y, cos_al_y)
+                 .rotate_z(sin_al_z, cos_al_z);
         
         p2 = p_p2.rotate_x(sin_al_x, cos_al_x)
-                .rotate_x(sin_al_y, cos_al_y)
-                .rotate_z(sin_al_z, cos_al_z);
+                 .rotate_x(sin_al_y, cos_al_y)
+                 .rotate_z(sin_al_z, cos_al_z);
         
         p3 = p_p3.rotate_x(sin_al_x, cos_al_x)
-                .rotate_y(sin_al_y, cos_al_y)
-                .rotate_z(sin_al_z, cos_al_z);
+                 .rotate_y(sin_al_y, cos_al_y)
+                 .rotate_z(sin_al_z, cos_al_z);
         
         if(vLoaded) {
             
             v1 = p_v1.rotate_x(sin_al_x, cos_al_x)
-                    .rotate_y(sin_al_y, cos_al_y)
-                    .rotate_z(sin_al_z, cos_al_z);
+                     .rotate_y(sin_al_y, cos_al_y)
+                     .rotate_z(sin_al_z, cos_al_z);
             
             v2 = p_v2.rotate_x(sin_al_x, cos_al_x)
-                    .rotate_y(sin_al_y, cos_al_y)
-                    .rotate_z(sin_al_z, cos_al_z);
+                     .rotate_y(sin_al_y, cos_al_y)
+                     .rotate_z(sin_al_z, cos_al_z);
             
             v3 = p_v3.rotate_x(sin_al_x, cos_al_x)
-                    .rotate_y(sin_al_y, cos_al_y)
-                    .rotate_z(sin_al_z, cos_al_z);
+                     .rotate_y(sin_al_y, cos_al_y)
+                     .rotate_z(sin_al_z, cos_al_z);
             
-            add_object(scene, new NormedTriangle3d(
-                                                      Point3d(p1.x * scale + dx, p1.y * scale + dy, p1.z * scale + dz),
-                                                      Point3d(p2.x * scale + dx, p2.y * scale + dy, p2.z * scale + dz),
-                                                      Point3d(p3.x * scale + dx, p3.y * scale + dy, p3.z * scale + dz),
-                                                      v1,
-                                                      v2,
-                                                      v3,
-                                                      default_color,
-                                                      default_material));
+            scene->add_object(new NormedTriangle3d(Point3d(p1.x * scale + dx, p1.y * scale + dy, p1.z * scale + dz),
+                                                   Point3d(p2.x * scale + dx, p2.y * scale + dy, p2.z * scale + dz),
+                                                   Point3d(p3.x * scale + dx, p3.y * scale + dy, p3.z * scale + dz),
+                                                   v1,
+                                                   v2,
+                                                   v3,
+                                                   default_color,
+                                                   default_material));
         } else {
-            add_object(scene, new Triangle3d(
-                                           Point3d(p1.x * scale + dx, p1.y * scale + dy, p1.z * scale + dz),
-                                           Point3d(p2.x * scale + dx, p2.y * scale + dy, p2.z * scale + dz),
-                                           Point3d(p3.x * scale + dx, p3.y * scale + dy, p3.z * scale + dz),
-                                           default_color,
-                                           default_material));
+            scene->add_object(new Triangle3d(Point3d(p1.x * scale + dx, p1.y * scale + dy, p1.z * scale + dz),
+                                             Point3d(p2.x * scale + dx, p2.y * scale + dy, p2.z * scale + dz),
+                                             Point3d(p3.x * scale + dx, p3.y * scale + dy, p3.z * scale + dz),
+                                             default_color,
+                                             default_material));
         }
         
         p_p2 = p_p3;

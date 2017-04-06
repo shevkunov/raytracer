@@ -16,16 +16,15 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     engine.cpp \
     src/canvas.cpp \
-    src/fog.cpp \
     src/scene.cpp \
-    src/render.cpp \
     src/obj_loader.cpp \
     src/sphere.cpp \
     src/tracer.cpp \
     src/triangle.cpp \
     src/kdtree.cpp \
     src/color.cpp \
-    src/utils.cpp
+    src/utils.cpp \
+    src/camera.cpp
 
 HEADERS  += mainwindow.h \
     include/canvas.h \
@@ -33,12 +32,14 @@ HEADERS  += mainwindow.h \
     include/kdtree.h \
     include/obj_loader.h \
     include/queue.h \
-    include/render.h \
     engine.h \
     include/utils.h \
     include/objects.h \
     include/sphere.h \
-    include/triangle.h
+    include/triangle.h \
+    include/scene.h \
+    include/fog.h \
+    include/camera.h
 
 FORMS    += mainwindow.ui
 
