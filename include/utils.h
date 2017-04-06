@@ -99,6 +99,7 @@ public:
                                      const Vector3d &norm);
 
     Vector3d reflect(const Vector3d &norm) const;
+    Vector3d mul(const Float& k) const;
 
 
     Vector3d rotate_x(const Float &sin_al, const Float &cos_al) const;
@@ -115,7 +116,10 @@ public:
     Float z;
 };
 
+Vector3d operator+(const Vector3d &a, const Vector3d &b);
+
 typedef Vector3d Point3d;
+
 
 /*
 class Point3d : public Vector3d {

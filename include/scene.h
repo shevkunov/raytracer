@@ -53,6 +53,7 @@ protected:
                           const Point3d * const point_ptr, const Float * const dist_ptr,
                           const Float &intensity, const int recursion_level) const;
 
+    bool refract(Vector3d& ray_dir, Vector3d a_normal, const Float &a_matIOR) const;
 };
 
 

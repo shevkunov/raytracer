@@ -15,6 +15,11 @@ public:
     ~KDTree();
 
 private:
+    static const int MAX_TREE_DEPTH = 20;
+    static const int OBJECTS_IN_LEAF = 1;
+    static const int MAX_SPLITS_OF_VOXEL = 5;
+    static const int SPLIT_COST = 5;
+
     enum Plane {XY, XZ, YZ, NONE};
 
     class Voxel {

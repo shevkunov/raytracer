@@ -70,7 +70,7 @@ void Scene::render(const Camera &camera, Canvas& canvas) const {
     }
 
     // TODO: argument of the function? global variable?
-    const int antialiasing = ANTIALIASING;
+    const bool antialiasing = ANTIALIASING;
 
     if(antialiasing) {
         Canvas edges = canvas.detect_edges();

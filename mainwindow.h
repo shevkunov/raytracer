@@ -5,6 +5,8 @@
 #include <QPainter>
 #include <QPicture>
 
+#include <engine.h>
+
 namespace Ui {
 class MainWindow;
 }

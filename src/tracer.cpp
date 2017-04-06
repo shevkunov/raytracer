@@ -49,13 +49,16 @@ Color Scene::calculate_color(const Point3d &vector_start,
     Color ambient_color;
     Color diffuse_color;
     Color reflected_color;
+    Color transparent_color;
     Color specular_color;
 
     Vector3d reflected_ray;
+    Vector3d transparent_ray;
+
     if ((material.Ks) || (material.Kr)) {
         reflected_ray = vector.reflect(norm);
     }
-    
+
     // Ambient
     if (material.Ka) {
         ambient_color = Color::mix(background_color, obj_color);
@@ -81,8 +84,6 @@ Color Scene::calculate_color(const Point3d &vector_start,
     
     // Reflect
     if (material.Kr) {
-        // Avoid deep recursion by tracing rays, which have intensity is greather than threshold
-        // and avoid infinite recursion by limiting number of recursive calls
         if ((intensity > THRESHOLD_RAY_INTENSITY)
                 && (recursion_level < MAX_RAY_RECURSION_LEVEL)) {
             reflected_color = trace_recursively(point, reflected_ray,
@@ -92,7 +93,22 @@ Color Scene::calculate_color(const Point3d &vector_start,
             reflected_color = background_color;
         }
     }
-    
+
+    // Transparent
+    if (material.Kt) {
+        Vector3d transparent_ray = vector;
+        bool refracted = refract(transparent_ray, norm, material.IOR);
+
+        if ((intensity > THRESHOLD_RAY_INTENSITY)
+                && (recursion_level < MAX_RAY_RECURSION_LEVEL) && refracted) {
+            transparent_color = trace_recursively(point, transparent_ray,
+                                                intensity * material.Kt * (1 - fog_density),
+                                                recursion_level + 1);
+        } else {
+            transparent_color = background_color; // TODO CHECK
+        }
+    }
+
     // Result
     Color result_color(0, 0, 0);
 
@@ -116,6 +132,11 @@ Color Scene::calculate_color(const Point3d &vector_start,
                                   Color::multiply(reflected_color, material.Kr));
     }
     
+    if (material.Kt) {
+        result_color = Color::add(result_color,
+                                  Color::multiply(transparent_color, material.Kt));
+    }
+
     if (fog->fog()) {
         result_color = Color::add(Color::multiply(background_color, fog_density),
                                   Color::multiply(result_color, 1 - fog_density));
@@ -189,4 +210,21 @@ bool Scene::is_viewable(const Point3d &target_point, const Point3d &starting_poi
     }
     // Ray doesn't intersect any of scene objects
     return true;
+}
+
+bool Scene::refract(Vector3d& ray_dir, Vector3d a_normal, const Float &a_matIOR) const {
+
+  Float eta = 1. / a_matIOR; // eta = in_IOR/out_IOR
+  Float cos_theta = 0. - Vector3d::dot(a_normal, ray_dir);
+  if (cos_theta < 0) {
+      cos_theta = cos_theta * (-1.);
+      a_normal = a_normal.mul(-1.);
+      eta = 1./eta;
+  }
+  Float k = 1. - eta*eta*(1. - cos_theta*cos_theta);
+  if (k >= 0.) {
+      ray_dir = (ray_dir.mul(eta) + a_normal.mul(eta*cos_theta - sqrt(k)));
+      ray_dir.normalize();
+  }
+  return (k > 0);
 }

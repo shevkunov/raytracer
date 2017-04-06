@@ -8,8 +8,6 @@ todo : continue to refactor render.h
     Triangle3d, Tracer::переписать код с учётом новых классов.
     Canvas:: С-строки
 
-    Сделать класс Scene
-    переделать во всех release free -> delete
 bugs : get_color address to (-1, -1)
 
 

@@ -25,7 +25,19 @@ public:
     }
 
     Material(const Float &Ka, const Float &Kd, const Float &Ks,
-             const Float &Kr, const Float &Kt, const Float &p) : p(p) {
+             const Float &Kr, const Float &Kt, const Float &p) : IOR(1.), p(p) {
+        Float sum = Ka + Kd + Ks + Kr + Kt;
+        this->Ka = Ka / sum;
+        this->Kd = Kd / sum;
+        this->Ks = Ks / sum;
+        this->Kr = Kr / sum;
+        this->Kt = Kt / sum;
+        this->IOR = 1.;
+    }
+
+    Material(const Float &Ka, const Float &Kd, const Float &Ks,
+             const Float &Kr, const Float &Kt, const Float &p, const Float& IOR)
+             : IOR(IOR), p(p) {
         Float sum = Ka + Kd + Ks + Kr + Kt;
         this->Ka = Ka / sum;
         this->Kd = Kd / sum;
@@ -39,6 +51,8 @@ public:
     Float Ks; // specular
     Float Kr; // reflection
     Float Kt; // transparency
+
+    Float IOR; // in_IOR/out_IOR
 
     Float p; // specular * lisht_source_color * ((cos(..))^p)
 };

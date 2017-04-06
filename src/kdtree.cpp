@@ -9,12 +9,6 @@
 #include <include/kdtree.h>
 #include <include/utils.h>
 
-
-const int MAX_TREE_DEPTH = 20;
-const int OBJECTS_IN_LEAF = 1;
-const int MAX_SPLITS_OF_VOXEL = 5;
-const int SPLIT_COST = 5;
-
 bool KDTree::Voxel::is_in(const Point3d p) const {
     return ((p.x > x_min) && (p.x < x_max) &&
             (p.y > y_min) && (p.y < y_max) &&

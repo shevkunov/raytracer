@@ -60,6 +60,10 @@ Vector3d Vector3d::reflect(const Vector3d &norm) const {
                     z - norm.z * k);
 }
 
+Vector3d Vector3d::mul(const Float& k) const {
+    return Vector3d(x * k, y * k, z * k);
+}
+
 Vector3d Vector3d::rotate_x(const Float &sin_al, const Float &cos_al) const {
     return Vector3d(x,
                     y * cos_al - z * sin_al,
@@ -76,4 +80,8 @@ Vector3d Vector3d::rotate_z(const Float &sin_al, const Float &cos_al) const {
     return Vector3d(x * cos_al - y * sin_al,
                     x * sin_al + y * cos_al,
                     z);
+}
+
+Vector3d operator+(const Vector3d &a, const Vector3d &b) {
+    return Vector3d(a.x + b.x, a.y + b.y, a.z + b.z);
 }
