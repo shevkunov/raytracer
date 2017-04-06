@@ -25,7 +25,6 @@ QImage engine(size_t width, size_t height) {
     Color sphere_color(250, 30, 30);
     Material sphere_material(1, 5, 5, 10, 0, 10);
 
-
     Object3d* quad = new Quadrangle3d(Point3d(-500, -500, -100),
                                       Point3d(+800, -0, -100),
                                       Point3d(+800, -0, +300),
@@ -108,11 +107,11 @@ QImage engine(size_t width, size_t height) {
     // This function is requried (bulding k-d tree of entire scene)
     scene->prepare_scene();
 
-    printf("\nNumber of polygons: %d\n", (int)scene->objects.size());
+    printf("\nNumber of polygons: %d\n", (int)scene->get_objects_count());
 
     // Allocating new light source
 
-    LightSource3d * light_source
+    LightSource3d *light_source
             = new LightSource3d(Point3d(-300, 300, 300), Color(255, 255, 255));
     // Adding light source to the scene
     scene->add_light_source(light_source);

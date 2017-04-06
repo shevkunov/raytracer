@@ -1,5 +1,5 @@
-#ifndef __COLOR_H__
-#define __COLOR_H__
+#ifndef COLOR_H
+#define COLOR_H
 
 #include <algorithm>
 #include <cmath>
@@ -55,4 +55,4 @@ private:
     Byte b_;
 };
 
-#endif //__COLOR_H__
+#endif // COLOR_H

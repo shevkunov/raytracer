@@ -100,46 +100,50 @@ void SceneFaceHandler::parse_face_str(char * str, int * v_index,
     int str_len = strlen(str);
 
     int i = 0;
-    while((str[i] != '/')
-          && (str[i] != ' ')
-          && (str[i] != '\0'))
-        i++;
+    while((str[i] != '/') && (str[i] != ' ') && (str[i] != '\0')) {
+        ++i;
+    }
     str[i] = '\0';
     
-    if(strlen(str) > 0)
+    if (strlen(str) > 0) {
         *v_index = atoi(str);
+    }
     
     i++;
-    if(i >= str_len)
+    if (i >= str_len) {
         return;
+    }
     
     str += i;
     str_len = strlen(str);
     i = 0;
-    while((str[i] != '/')
-          && (str[i] != ' ')
-          && (str[i] != '\0'))
-        i++;
+    while ((str[i] != '/') && (str[i] != ' ') && (str[i] != '\0')) {
+        ++i;
+    }
+
     str[i] = '\0';
     
-    if(strlen(str) > 0)
+    if(strlen(str) > 0) {
         *vt_index = atoi(str);
+    }
     
     i++;
-    if(i >= str_len)
+    if (i >= str_len) {
         return;
+    }
     
     str += i;
     str_len = strlen(str);
     i = 0;
-    while((str[i] != '/')
-          && (str[i] != ' ')
-          && (str[i] != '\0'))
-        i++;
+    while ((str[i] != '/') && (str[i] != ' ') && (str[i] != '\0')){
+        ++i;
+    }
+
     str[i] = '\0';
     
-    if(strlen(str) > 0)
+    if (strlen(str) > 0) {
         *vn_index = atoi(str);
+    }
 }
 
 void SceneFaceHandler::scene_face_handler(Queue<Point3d> &vertexes,

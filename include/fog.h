@@ -1,3 +1,6 @@
+#ifndef FOG_H
+#define FOG_H
+
 #include <stdlib.h>
 #include <float.h>
 #include <math.h>
@@ -36,3 +39,4 @@ private:
     Float k;
 };
 
+#endif // FOG_H

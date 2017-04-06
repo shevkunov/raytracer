@@ -23,36 +23,29 @@ public:
          default_color(default_color), default_material(default_material) {
     }
 
+    void load_obj(std::string filename);
+protected:
     Scene * scene;
 
     Float scale;
-    
-    Float dx;
-    Float dy;
-    Float dz;
-    
-    Float sin_al_x;
-    Float cos_al_x;
-    
-    Float sin_al_y;
-    Float cos_al_y;
-    
-    Float sin_al_z;
-    Float cos_al_z;
-    
+    Float dx, dy, dz;
+    Float sin_al_x, cos_al_x;
+    Float sin_al_y, cos_al_y;
+    Float sin_al_z, cos_al_z;
+
     Color default_color;
     Material default_material;
 
     std::vector<Point3d> vertexes;
     std::vector<Vector3d> norm_vectors;
 
-    void load_obj(std::string filename);
     void scene_face_handler(Queue<Point3d> &vertexes, Queue<Vector3d> &norm_vectors);
 
     void parse_face(std::string &str);
     void parse_vertex(std::ifstream &in);
     void parse_norm_vector(std::ifstream &in);
     void parse_face_str(char *str, int * v_index, int * vt_index, int * vn_index);
+
 };
 
 

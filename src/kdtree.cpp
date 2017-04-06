@@ -15,7 +15,7 @@ const int OBJECTS_IN_LEAF = 1;
 const int MAX_SPLITS_OF_VOXEL = 5;
 const int SPLIT_COST = 5;
 
-bool Voxel::is_in(const Point3d p) const {
+bool KDTree::Voxel::is_in(const Point3d p) const {
     return ((p.x > x_min) && (p.x < x_max) &&
             (p.y > y_min) && (p.y < y_max) &&
             (p.z > z_min) && (p.z < z_max));
@@ -30,7 +30,7 @@ KDTree::~KDTree() {
     delete root;
 }
 
-KDNode::~KDNode() {
+KDTree::KDNode::~KDNode() {
     if (l) {
         delete l;
     }
@@ -39,7 +39,7 @@ KDNode::~KDNode() {
     }
 }
 
-KDNode* KDTree::rec_build(std::vector<Object3d*> &objects, Voxel v, int iter) {
+KDTree::KDNode* KDTree::rec_build(std::vector<Object3d*> &objects, Voxel v, int iter) {
     enum Plane p;
     Point3d c;
     v.find_plane(objects, iter, p, c);
@@ -62,7 +62,7 @@ KDNode* KDTree::rec_build(std::vector<Object3d*> &objects, Voxel v, int iter) {
 }
 
 std::vector<Object3d*>
-Voxel::filter_overlapped_objects(const std::vector<Object3d *> &objects) const {
+KDTree::Voxel::filter_overlapped_objects(const std::vector<Object3d *> &objects) const {
     std::vector<Object3d*> result;
     for (size_t i = 0; i < objects.size(); ++i) {
         if (is_in(objects[i])) {
@@ -72,7 +72,7 @@ Voxel::filter_overlapped_objects(const std::vector<Object3d *> &objects) const {
     return result;
 }
 
-void Voxel::split(const enum Plane p, const Point3d c,
+void KDTree::Voxel::split(const enum Plane p, const Point3d c,
                         Voxel& vl, Voxel& vr) const {
     vl = vr = (*this);
     switch (p) {
@@ -109,7 +109,7 @@ void Voxel::split(const enum Plane p, const Point3d c,
  * see: http://stackoverflow.com/a/4633332/653511
  */
 
-void Voxel::find_plane(const std::vector<Object3d*> &objects, const int tree_depth,
+void KDTree::Voxel::find_plane(const std::vector<Object3d*> &objects, const int tree_depth,
                        enum Plane &p, Point3d &c) const {
     if ((tree_depth >= MAX_TREE_DEPTH) || (objects.size() <= OBJECTS_IN_LEAF)) {
         p = NONE;
@@ -228,7 +228,7 @@ void Voxel::find_plane(const std::vector<Object3d*> &objects, const int tree_dep
     }
 }
 
-int Voxel::count_objects_in(const std::vector<Object3d*> &objects) const {
+int KDTree::Voxel::count_objects_in(const std::vector<Object3d*> &objects) const {
     int count = 0;
     for (size_t i = 0; i < objects.size(); ++i) {
         if (is_in(objects[i])) {
@@ -239,7 +239,7 @@ int Voxel::count_objects_in(const std::vector<Object3d*> &objects) const {
     return count;
 }
 
-Voxel::Voxel(const std::vector<Object3d*> &objects) {
+KDTree::Voxel::Voxel(const std::vector<Object3d*> &objects) {
     if (objects.empty()) {
         (*this) = {-1, -1, -1, 1, 1, 1};
         return;
@@ -261,6 +261,7 @@ Voxel::Voxel(const std::vector<Object3d*> &objects) {
         min_p = obj->get_min_boundary_point();
         max_p = obj->get_max_boundary_point();
 
+
         x_min = (x_min < min_p.x) ? x_min : min_p.x;
         y_min = (y_min < min_p.y) ? y_min : min_p.y;
         z_min = (z_min < min_p.z) ? z_min : min_p.z;
@@ -273,7 +274,7 @@ Voxel::Voxel(const std::vector<Object3d*> &objects) {
     (*this) = {x_min - 1, y_min - 1, z_min - 1, x_max + 1, y_max + 1, z_max + 1};
 }
 
-bool Voxel::is_in(Object3d * const obj) const {
+bool KDTree::Voxel::is_in(Object3d * const obj) const {
     Point3d min_p = obj->get_min_boundary_point();
     Point3d max_p = obj->get_max_boundary_point();
 
@@ -281,7 +282,7 @@ bool Voxel::is_in(Object3d * const obj) const {
           || (min_p.x > x_max) || (min_p.y > y_max) || (min_p.z > z_max) );
 }
 
-KDNode::KDNode(const std::vector<Object3d*> &objects) {
+KDTree::KDNode::KDNode(const std::vector<Object3d*> &objects) {
     plane = NONE;
 
     for (size_t i = 0; i < objects.size(); ++i) {
@@ -292,7 +293,7 @@ KDNode::KDNode(const std::vector<Object3d*> &objects) {
     r = NULL;
 }
 
-bool Voxel::vector_plane_intersection(const Vector3d vector,
+bool KDTree::Voxel::vector_plane_intersection(const Vector3d vector,
                                       const Point3d vector_start,
                                       const enum Plane plane,
                                       const Point3d coord,
@@ -343,19 +344,19 @@ bool Voxel::vector_plane_intersection(const Vector3d vector,
     return true;
 }
 
-inline bool Voxel::x_in_voxel(const Float x) const {
+inline bool KDTree::Voxel::x_in_voxel(const Float x) const {
     return (x_min < x) && (x < x_max);
 }
 
-inline bool Voxel::y_in_voxel(const Float y) const {
+inline bool KDTree::Voxel::y_in_voxel(const Float y) const {
     return (y_min < y) && (y < y_max);
 }
 
-inline bool Voxel::z_in_voxel(const Float z) const {
+inline bool KDTree::Voxel::z_in_voxel(const Float z) const {
     return (z_min < z) && (z < z_max);
 }
 
-bool Voxel::intersection(const Vector3d vector,
+bool KDTree::Voxel::intersection(const Vector3d vector,
                                const Point3d vector_start) const {
     if (is_in(vector_start)) {
         return true;

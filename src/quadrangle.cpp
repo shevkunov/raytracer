@@ -8,7 +8,10 @@ Quadrangle3d::Quadrangle3d(const Point3d &p1, const Point3d &p2,
         : p1(p1), p2(p2), p3(p3), p4(p4),
           norm(Vector3d::cross(Vector3d(p1, p3), Vector3d(p3, p2))),
           color(color), material(material) {
-
+    Vector3d norm2 = Vector3d::cross(Vector3d(p1, p4), Vector3d(p4, p3));
+    if (Vector3d::cross(norm, norm2).module2() > EPSILON) {
+        throw new std::runtime_error("bad quadrangle");
+    }
     //d = (-(p1.x * norm.x + p1.y * norm.y + p1.z * norm.z));
 }
 

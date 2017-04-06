@@ -26,6 +26,8 @@ public:
 
     virtual void get_weights_of_vertexes(const Point3d &intersection_point,
                                          Float &w1, Float &w2, Float &w3) const;
+
+protected:
     // vertexes
     Point3d p1;
     Point3d p2;
@@ -53,6 +55,7 @@ public:
              const Color &color, const Material &material);
     virtual Vector3d get_normal_vector(const Point3d &intersection_point) const;
 
+protected:
     // normals
     Vector3d n1;
     Vector3d n2;
@@ -66,6 +69,7 @@ public:
              Canvas *texture, const Color &color, const Material &material);
     virtual Color get_color(const Point3d &intersection_point) const;
 
+protected:
     // texture
     Point2d t1;
     Point2d t2;

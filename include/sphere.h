@@ -20,6 +20,7 @@ public:
     virtual Point3d get_min_boundary_point() const;
     virtual Point3d get_max_boundary_point() const;
 
+protected:
     Point3d center;
     Float radius;
     Color color;

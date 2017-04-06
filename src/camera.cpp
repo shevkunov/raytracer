@@ -43,3 +43,4 @@ void Camera::move_camera(const Vector3d &vector) {
                        curr_pos.y + r_vector.y,
                        curr_pos.z + r_vector.z);
 }
+

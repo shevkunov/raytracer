@@ -24,14 +24,16 @@ public:
     void rebuild_kd_tree();
     void render(const Camera &camera, Canvas& canvas) const;
 
+    // Tracer
+    Color trace(const Camera &camera, const Vector3d &vector) const;
+    size_t get_objects_count() const;
+
+protected:
     std::vector<Object3d*> objects;
     std::vector<LightSource3d*> light_sources;
     Color background_color;
     KDTree *kd_tree;
     Fog *fog;
-
-    // Tracer
-    Color trace(const Camera &camera, const Vector3d &vector) const;
 
     Color trace_recursively(const Point3d &vector_start,
                             const Vector3d &vector, const Float &intensity,
@@ -50,14 +52,8 @@ public:
                           const Vector3d &vector, Object3d * const * obj_ptr,
                           const Point3d * const point_ptr, const Float * const dist_ptr,
                           const Float &intensity, const int recursion_level) const;
+
 };
 
-void
-release_object3d(Object3d * obj);
-
-
-/***************************************************
- *                     Render                      *
- ***************************************************/
 
 #endif // SCENE_H

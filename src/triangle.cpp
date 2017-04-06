@@ -4,9 +4,8 @@ Triangle3d::Triangle3d(const Point3d &p1, const Point3d &p2, const Point3d &p3,
                        const Color &color, const Material &material)
         : p1(p1), p2(p2), p3(p3),
           norm(Vector3d::cross(Vector3d(p1, p3), Vector3d(p3, p2))),
-          color(color), material(material),
           v_p1_p2(Vector3d(p1, p2)), v_p2_p3(Vector3d(p2, p3)),
-          v_p3_p1(Vector3d(p3, p1)) {
+          v_p3_p1(Vector3d(p3, p1)), color(color), material(material) {
 
     d = (-(p1.x * norm.x + p1.y * norm.y + p1.z * norm.z));
 }

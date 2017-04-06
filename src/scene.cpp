@@ -59,10 +59,6 @@ void Scene::render(const Camera &camera, Canvas& canvas) const {
     const Float dy = h / 2.0;
     const Float focus = camera.proj_plane_dist;
 
-    // TODO: consider possibility to define these OpenMP parameters
-    // in declarative style (using directives of preprocessor)
-    //omp_set_num_threads((num_threads < 2) ? 1 : num_threads);
-
     for(int i = 0; i < w; i++) {
         for(int j = 0; j < h; j++) {
             const Float x = i - dx;
@@ -91,12 +87,8 @@ void Scene::render(const Camera &camera, Canvas& canvas) const {
 
                     Color c = canvas.get_pixel(i, j);
 
-                    const Float weight = 1.0 / 4;/*
-                    c = mul_color(c, weight);
-                    c = add_colors(c, mul_color(trace(scene, camera, Vector3d(x + 0.5, y, focus)), weight));
-                    c = add_colors(c, mul_color(trace(scene, camera, Vector3d(x, y + 0.5, focus)), weight));
-                    c = add_colors(c, mul_color(trace(scene, camera, Vector3d(x + 0.5, y + 0.5, focus)), weight));
-                */
+                    const Float weight = 1.0 / 4;
+
                     c = Color::multiply(c, weight);
                     c = Color::add(c,
                                    Color::multiply(trace(camera, Vector3d(x + 0.5, y, focus)),
@@ -115,7 +107,9 @@ void Scene::render(const Camera &camera, Canvas& canvas) const {
             }
         }
     }
-
 }
 
+size_t Scene::get_objects_count() const {
+    return objects.size();
+}
 
