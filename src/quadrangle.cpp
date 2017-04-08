@@ -57,3 +57,48 @@ Point3d Quadrangle3d::get_max_boundary_point() const {
 
     return Point3d(x_max + EPSILON, y_max + EPSILON, z_max + EPSILON);
 }
+
+bool Quadrangle3d::reflects() const {
+    return material.Kr != 0;
+}
+
+bool Quadrangle3d::secondary_light(const Point3d &point, const LightSource3d &ls,
+                                   LightSource3d &ls_secondary) const {
+    (void) point;
+    (void) ls;
+    (void) ls_secondary;
+    return false;
+}
+
+TexturedQuadrangle3d::TexturedQuadrangle3d(const Point3d &p1, const Point3d &p2,
+                                           const Point3d &p3, const Point3d &p4,
+                                           const Point2d &t1, const Point2d &t2,
+                                           const Point2d &t3, const Point2d &t4,
+                                           Canvas *texture, const Color &color,
+                                           const Material &material)
+    : a(TexturedTriangle3d(p1, p2, p3, t1, t2, t3, texture, color, material)),
+      b(TexturedTriangle3d(p1, p4, p3, t1, t4, t3, texture, color, material)),
+      Quadrangle3d(p1, p2, p3, p4, color, material){
+    Vector3d norm2 = Vector3d::cross(Vector3d(p1, p4), Vector3d(p4, p3));
+    if (Vector3d::cross(norm, norm2).module2() > EPSILON) {
+        throw new std::runtime_error("bad quadrangle");
+    }
+}
+
+bool TexturedQuadrangle3d::intersect(const Point3d &vector_start, const Vector3d &vector,
+               Point3d &intersection_point) const {
+    if (!a.intersect(vector_start, vector, intersection_point)) {
+        return b.intersect(vector_start, vector, intersection_point);
+    } else {
+        return true;
+    }
+}
+
+Color TexturedQuadrangle3d::get_color(const Point3d &intersection_point) const {
+   Point3d itp;
+   if (a.intersect(intersection_point + norm, intersection_point - norm, itp)) {
+       return a.get_color(intersection_point);
+   } else {
+       return b.get_color(intersection_point);
+   }
+}

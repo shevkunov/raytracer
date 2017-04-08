@@ -46,7 +46,7 @@ Canvas Canvas::grayscale() const {
     return ret;
 }
 
-// Edges detection
+// Edges detection for antialiasing
 // See: http://en.wikipedia.org/wiki/Sobel_operator
 
 int mattrix_x[3][3] =

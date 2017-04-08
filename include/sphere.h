@@ -19,7 +19,9 @@ public:
     virtual Material get_material(const Point3d &intersection_point) const;
     virtual Point3d get_min_boundary_point() const;
     virtual Point3d get_max_boundary_point() const;
-
+    virtual bool reflects() const;
+    virtual bool secondary_light(const Point3d &point, const LightSource3d &ls,
+                                 LightSource3d & ls_secondary) const;
 protected:
     Point3d center;
     Float radius;

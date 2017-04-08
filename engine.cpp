@@ -15,7 +15,7 @@
 
 QImage engine(size_t width, size_t height) {
     // Allocating scene
-    Color BACKGROUND_COLOR = Color(255, 255, 255);
+    Color BACKGROUND_COLOR = Color(240, 240, 240);
     Scene * scene = new Scene(BACKGROUND_COLOR);
 
     /// Quadrangle3d 1
@@ -32,8 +32,18 @@ QImage engine(size_t width, size_t height) {
     {
         Float radius = 50;
         Point3d center(50, 100, 0);
-        Color sphere_color(200, 200, 30);
-        Material sphere_material(1, 5, 5, 10, 50, 10);
+        Color sphere_color(100, 200, 30);
+        Material sphere_material(1, 5, 5, 0, 50, 10, 0.9);
+        Object3d* sphere = new Sphere(center, radius, sphere_color, sphere_material);
+        scene->add_object(sphere);
+    }
+
+    /// Sphere 0.5
+    {
+        Float radius = 50;
+        Point3d center(75, 125, -100);
+        Color sphere_color(250, 250, 50);
+        Material sphere_material(1, 3, 2, 0, 0, 10);
         Object3d* sphere = new Sphere(center, radius, sphere_color, sphere_material);
         scene->add_object(sphere);
     }
@@ -69,13 +79,26 @@ QImage engine(size_t width, size_t height) {
                                              &tex,
                                              Color(55, 255, 55),
                                              Material(1, 6, 0, 2, 0, 0)));
-
-
+/*
+    /// TexturedQuadrangle3d 1
+    Canvas tex2("./models/skybox/posx.png");
+    scene->add_object(new TexturedQuadrangle3d(Point3d(-300, -120, -300),
+                                               Point3d(300, -120, -300),
+                                               Point3d(300, -120, 300),
+                                               Point3d(-300,-120, 300),
+                                               Point2d(5, 0),
+                                               Point2d(0, 0),
+                                               Point2d(0, 5),
+                                               Point2d(5, 5),
+                                               &tex2,
+                                               Color(55, 255, 55),
+                                               Material(1, 6, 0, 2, 0, 0)));
+ */
     /// Triangle3d 2
     Object3d * triangle = new Triangle3d(Point3d(-700, -700, -130), // vertex 1
                                        Point3d( 700, -700, -130), // vertex 2
-                                       Point3d(   0,  400, -130), // vertex 3
-                                       Color(100, 255, 30),       // color
+                                       Point3d(   0,  500, -130), // vertex 3
+                                       Color(255, 100, 30),       // color
                                        Material(1, 6, 0, 2, 0, 0) // surface params
                                        );
     scene->add_object(triangle);
@@ -95,15 +118,15 @@ QImage engine(size_t width, size_t height) {
                                       // scale:
                                       40,
                                       // move dx, dy, dz:
-                                      -150, -100, 30,
+                                      -150, -100, 0,
                                       // rotate around axises x, y, z:
                                       0, 0, 0,
                                       // color
-                                      Color(200, 200, 50),
+                                      Color(50, 50, 50),
                                       // surface params
-                                      Material(2, 3, 0, 0, 0, 0)
+                                      Material(3, 3, 1, 0, 0, 5)
                                       );
-    scene_face_handler.load_obj("./models/cow.obj");
+    scene_face_handler.load_obj("./models/lamp.obj");
 
 
 
@@ -120,12 +143,12 @@ QImage engine(size_t width, size_t height) {
     scene->add_light_source(light_source);
 
     // Adding fog
-    //Float density = 0.001;
-    //scene->set_exponential_fog(density);
+    Float density = 0.00001;
+    scene->set_exponential_fog(density);
 
 
     Camera camera(Point3d(0, 500, 0),
-                  -1.57, 0, 3.14,
+                  -1.57, 0, 3.14, //3.14
                   320);
 
     Canvas canvas(width, height);

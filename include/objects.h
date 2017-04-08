@@ -11,11 +11,9 @@ public:
     }
 
     LightSource3d(const Point3d &location, const Color &color)
-        : location_world(location), location(location), color(color) {
+        : location(location), color(color) {
     }
-
-    Point3d location_world; // Absolute position
-    Point3d location; // Projection position
+    Point3d location;
     Color color;
 };
 
@@ -63,12 +61,15 @@ public:
     }
 
     virtual bool intersect(const Point3d &vector_start, const Vector3d &vector,
-                   Point3d &intersection_point) const = 0;
+                           Point3d &intersection_point) const = 0;
     virtual Color get_color(const Point3d &intersection_point) const = 0;
     virtual Vector3d get_normal_vector(const Point3d &intersection_point) const = 0;
     virtual Material get_material(const Point3d &intersection_point) const = 0;
     virtual Point3d get_min_boundary_point() const = 0;
     virtual Point3d get_max_boundary_point() const = 0;
+    virtual bool reflects() const = 0;
+    virtual bool secondary_light(const Point3d &point, const LightSource3d &ls,
+                                 LightSource3d &ls_secondary) const = 0;
 };
 
 #endif // OBJECTS_H

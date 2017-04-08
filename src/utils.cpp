@@ -85,3 +85,7 @@ Vector3d Vector3d::rotate_z(const Float &sin_al, const Float &cos_al) const {
 Vector3d operator+(const Vector3d &a, const Vector3d &b) {
     return Vector3d(a.x + b.x, a.y + b.y, a.z + b.z);
 }
+
+Vector3d operator-(const Vector3d &a, const Vector3d &b) {
+    return Vector3d(a.x - b.x, a.y - b.y, a.z - b.z);
+}

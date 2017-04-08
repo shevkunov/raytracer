@@ -15,28 +15,18 @@ bool Triangle3d::intersect(const Point3d &vector_start, const Vector3d &vector,
     const Float scalar_product = Vector3d::dot(norm, vector);
 
     if (fabs(scalar_product) < EPSILON) {
-        // Ray is perpendicular to triangles normal vector (A, B, C)
-        // it means that ray is parellel to triangle
-        // so there is no intersection
         return false;
     }
 
-    const Float k = - (norm.x * vector_start.x
-                 + norm.y * vector_start.y
-                 + norm.z * vector_start.z
-                 + d)
-            / scalar_product;
+    const Float k = - (Vector3d::dot(norm, vector_start) + d) / scalar_product;
 
     if (k < EPSILON) {
-        // Avoid intersection in the opposite direction
+        // avoid intersection in the opposite direction
         return false;
     }
 
-    // Intersection point
-    const Float x = vector_start.x + vector.x * k;
-    const Float y = vector_start.y + vector.y * k;
-    const Float z = vector_start.z + vector.z * k;
-    const Point3d ipt = Point3d(x, y, z);
+
+    const Point3d ipt = vector_start + vector.mul(k); // intersection point
 
     if (Vector3d::check_same_clock_dir(v_p1_p2, Vector3d(p1, ipt), norm)
        && Vector3d::check_same_clock_dir(v_p2_p3, Vector3d(p2, ipt), norm)
@@ -46,7 +36,6 @@ bool Triangle3d::intersect(const Point3d &vector_start, const Vector3d &vector,
         return true;
     }
 
-    // No intersection
     return false;
 }
 
@@ -79,6 +68,29 @@ Point3d Triangle3d::get_max_boundary_point() const {
     Float z_max = fast_max(p1.z, p2.z, p3.z);
 
     return Point3d(x_max + EPSILON, y_max + EPSILON, z_max + EPSILON);
+}
+
+bool Triangle3d::reflects() const {
+    return material.Kr != 0;
+}
+
+bool Triangle3d::secondary_light(const Point3d &point, const LightSource3d &ls,
+                             LightSource3d & ls_secondary) const {
+    ls_secondary = ls;
+    Vector3d delta = p1 - ls.location;
+    delta = delta.reflect(norm);
+    ls_secondary.location = p1 - delta;
+
+    Point3d intersection_point;
+    bool inter = intersect(point, ls_secondary.location - point, intersection_point);
+    if (inter) {
+        Vector3d delta = intersection_point - ls_secondary.location;
+        ls_secondary.location = ls_secondary.location + delta.mul(1. + EPSILON);
+        ls_secondary.color = this->get_color(intersection_point);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void Triangle3d::get_weights_of_vertexes(const Point3d &intersection_point,

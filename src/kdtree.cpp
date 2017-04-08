@@ -114,7 +114,7 @@ void KDTree::Voxel::find_plane(const std::vector<Object3d*> &objects, const int 
     const Float hy = y_max - y_min;
     const Float hz = z_max - z_min;
 
-    // Calculating square of each side of initial voxel
+    // evaluating square of each side of init voxel
     Float Sxy = hx * hy;
     Float Sxz = hx * hz;
     Float Syz = hy * hz;
@@ -138,10 +138,7 @@ void KDTree::Voxel::find_plane(const std::vector<Object3d*> &objects, const int 
     Float S_split;
     Float S_non_split;
 
-    // Let's find split surface, which have the least SAH
-
-    // TODO: maybe do some refactoring (because of following 3 loops are very similar)
-
+    // let's find split surface, which have the least SAH
     // trying to minimize SAH by splitting across XY plane
     S_split = Sxy;
     S_non_split = Sxz + Syz;

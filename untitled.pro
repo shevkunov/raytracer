@@ -45,5 +45,4 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-DISTFILES += \
-    work.txt
+DISTFILES +=

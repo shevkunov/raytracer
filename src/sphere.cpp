@@ -9,9 +9,7 @@ bool Sphere::intersect(const Point3d &vector_start, const Vector3d &vector,
                Point3d &intersection_point) const {
     const Float a = vector.module2();
 
-    const Float b = 2 * (vector.x * (vector_start.x - center.x)
-                         + vector.y * (vector_start.y - center.y)
-                         + vector.z * (vector_start.z - center.z));
+    const Float b = 2 * Vector3d::dot(vector, (vector_start - center));;
 
     const Float c = center.module2()
                     + vector_start.module2()
@@ -39,9 +37,7 @@ bool Sphere::intersect(const Point3d &vector_start, const Vector3d &vector,
         return false;
     }
 
-    intersection_point = Point3d(vector_start.x + t * vector.x,
-                                 vector_start.y + t * vector.y,
-                                 vector_start.z + t * vector.z);
+    intersection_point = vector_start + vector.mul(t);
 
     return true;
 }
@@ -70,4 +66,16 @@ Point3d Sphere::get_min_boundary_point() const {
 Point3d Sphere::get_max_boundary_point() const {
     return Point3d(center.x + radius + 1., center.y + radius + 1.,
                    center.z + radius + 1.);
+}
+
+bool Sphere::reflects() const {
+    return material.Kr != 0;
+}
+
+bool Sphere::secondary_light(const Point3d &point, const LightSource3d &ls,
+                             LightSource3d &ls_secondary) const {
+    (void) point;
+    (void) ls;
+    (void) ls_secondary;
+    return false;
 }

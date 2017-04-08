@@ -28,6 +28,9 @@ Scene::~Scene() {
 
 void Scene::add_object(Object3d * const object) {
     objects.push_back(object);
+    if (object->reflects()) {
+        reflecting_objects.push_back(object);
+    }
 }
 
 void Scene::prepare_scene() {
@@ -69,19 +72,15 @@ void Scene::render(const Camera &camera, Canvas& canvas) const {
         }
     }
 
-    // TODO: argument of the function? global variable?
-    const bool antialiasing = ANTIALIASING;
-
-    if(antialiasing) {
+    if(ANTIALIASING) {
         Canvas edges = canvas.detect_edges();
-        for(int i = 1; i < w - 1; i++) {
-            for(int j = 1; j < h - 1; j++) {
+        for (int i = 1; i < w - 1; i++) {
+            for (int j = 1; j < h - 1; j++) {
                 // edges canvas is grayscaled
                 // it means that color components (r, g, b) are equal
                 Byte gray = edges.get_pixel(i, j).r();
 
-                // TODO: improve
-                if(gray > 10) {
+                if (gray > 10) {
                     const Float x = i - dx;
                     const Float y = j - dy;
 

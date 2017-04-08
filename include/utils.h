@@ -117,6 +117,7 @@ public:
 };
 
 Vector3d operator+(const Vector3d &a, const Vector3d &b);
+Vector3d operator-(const Vector3d &a, const Vector3d &b);
 
 typedef Vector3d Point3d;
 

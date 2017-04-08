@@ -16,13 +16,14 @@ public:
     virtual bool intersect(const Point3d &vector_start, const Vector3d &vector,
                    Point3d &intersection_point) const;
 
-    ////////
-
     virtual Color get_color(const Point3d &intersection_point) const;
     virtual Vector3d get_normal_vector(const Point3d &intersection_point) const;
     virtual Material get_material(const Point3d &intersection_point) const;
     virtual Point3d get_min_boundary_point() const;
     virtual Point3d get_max_boundary_point() const;
+    virtual bool reflects() const;
+    virtual bool secondary_light(const Point3d &point, const LightSource3d &ls,
+                                 LightSource3d & ls_secondary) const;
 
     virtual void get_weights_of_vertexes(const Point3d &intersection_point,
                                          Float &w1, Float &w2, Float &w3) const;
